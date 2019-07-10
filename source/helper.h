@@ -13,3 +13,5 @@ void issue_info(const char* t1);
 int strcmpnl (const char *s1, const char *s2);
 double sigma2zeta(double sigma, double beta0, double beta);
 double tau2zeta(double tau, double beta);
+void solve2by2eq(double a1, double b1, double c1, double a2, double b2, double c2, double *x);
+void mtrx_vector_mult_pointer(int mp, int np,  double **mtrx_a, double mtrx_b[6], double result[6]);

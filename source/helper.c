@@ -114,3 +114,35 @@ double energy2momentum(double energy, double mass){
     } 
     return sqrt(momsq);
 }
+
+void solve2by2eq(double a1, double b1, double c1, double a2, double b2, double c2, double *x){
+    double det = a1*b2-b1*a2;
+    double dx = c1*b2-b1*c2;
+    double dy = a1*c2-c1*a2;
+    x[0] = (dx/det);
+    x[1] = (dy/det);
+
+}
+void mtrx_vector_mult_pointer(int mp, int np,  double **mtrx_a, double mtrx_b[6], double result[6])
+{
+
+    int m = mp;
+    int n = np;
+    result[0]=0;
+    result[1]=0;
+    result[2]=0;
+    result[3]=0;
+    result[4]=0;
+    result[5]=0;
+
+    register int i=0, j=0, k=0;
+    for (i = 0; i < mp; i++)
+    {
+            for (k = 0; k < np; k++)
+            {
+                result [i] += mtrx_a [i][k] * mtrx_b [k];
+                 
+            }
+    }
+
+}

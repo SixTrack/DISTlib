@@ -21,6 +21,7 @@ void initializedistribution(int numberOfDist){
         
         (dist + i)->ref = (struct refparam*)malloc(sizeof(struct refparam));
         (dist + i)->coord = (struct parameters**)malloc(dim*sizeof(struct parameters*));
+        (dist + i)->emitt = (struct emittances*)malloc(sizeof(struct emittances));
         (dist + i)->cuts2apply = (struct appliedcut*)malloc(sizeof(struct appliedcut));
         (dist + i)->cuts2apply->physical = (struct cut**)malloc(dim*sizeof(struct cut*));
         (dist + i)->cuts2apply->normalized = (struct cut**)malloc(dim*sizeof(struct cut*));
@@ -63,6 +64,8 @@ void initializedistribution(int numberOfDist){
 void sete0andmass0(double energy0, double mass0){
 	dist->ref->mass0 = mass0;
 	dist->ref->e0 = energy0;
+    dist->ref->pc0 = energy2momentum(dist->ref->e0,dist->ref->mass0);
+    dist->ref->beta0 = (dist->ref->pc0)/(dist->ref->e0);
 }
 
 void setdistribution(int ndist){
@@ -70,11 +73,12 @@ void setdistribution(int ndist){
 }
 
 void setemitt12(double e1, double e2){
-
+    dist->emitt->e1=e1; 
+    dist->emitt->e2=e2; 
 }
 
 void setemitt3(double e3){
-    
+        dist->emitt->e3=e3; 
 }
 
 void settasmatrix(double *tas){
@@ -94,7 +98,8 @@ void setnormalizedcoords(double *xn, double *xpn, double *yn, double *ypn, doubl
 		dist->incoord[i]->normalized[3] = ypn[i];
 		dist->incoord[i]->normalized[4] = zn[i];
 		dist->incoord[i]->normalized[5] = zpn[i]; 
-	}
+    }
+
 	dist->totincoord  =*totparticles;
 	dist->incoordtype = 1;
 }
@@ -124,9 +129,10 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
     double tmp[6];
     if(dist->isDistrcalculated ==0){
         gensixcanonical();
+
     }
     for(int i=0; i<dist->totoutcoord; i++){
-        canonical2six(dist->incoord[i]->physical, dist->ref->beta0, dist->ref->pc0, dist->ref->mass0, dist->incoord[i]->mass, tmp);
+        canonical2six(dist->outcoord[i]->physical, dist->ref->beta0, dist->ref->pc0, dist->ref->mass0, dist->incoord[i]->mass, tmp);
         x[i]  = tmp[0];
         xp[i] = tmp[1];
         y[i]  = tmp[2];

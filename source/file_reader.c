@@ -12,7 +12,7 @@
 
 
 int readfile(const char*  filename){
-
+  dist->incoordtype=2;
   FILE *file = fopen ( filename, "r" );
   double** table = malloc(MAX_ROWS * sizeof(double*));    // allocate the rows
   for (int r = 0; r < MAX_ROWS; ++r){

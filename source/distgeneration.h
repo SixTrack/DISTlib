@@ -3,6 +3,7 @@ struct distparam
 	struct parameters** coord;
     int disttype;
 	struct refparam* ref;
+	struct emittances* emitt;
 	double **tas;
 	double **invtas;
 	double *closedorbit;
@@ -77,3 +78,5 @@ void generatefromnormalized();
 void generatefrommixed();
 void generatefromaction();
 void generatefromphysical();
+void action2normalized(double acangl[6], double normalized[6]);
+void normalized2canonical(double normalized[6], double cancoord[6]);
