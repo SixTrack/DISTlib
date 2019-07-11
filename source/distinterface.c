@@ -136,6 +136,13 @@ void setnormalizedcut(int variable, double min, double max){
 	dist->cuts2apply->normalized[variable-1]->isset=1;
 
 }
+void getlength(int *totlength){
+    if(dist->isDistrcalculated ==0){
+        gensixcanonical();
+    }
+    *totlength=dist->totoutcoord;
+}
+
 void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma, double *deltap, int *totparticles){
     double tmp[6];
     if(dist->isDistrcalculated ==0){
@@ -153,6 +160,7 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
    }
     *totparticles=dist->totoutcoord;
 }
+
 
 void getrefpara(double *energy0, double *mass0, int *a0, int *z0){
     *energy0=dist->ref->e0;
