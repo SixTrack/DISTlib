@@ -19,5 +19,5 @@ void sete0andmass0(double energy0, double mass0);
 void setemitt12(double e1, double e2);
 void setemitt3(double e3);
 void settasmatrix(double * tas);
-void setnormalizedcoords(double *xn, double *xnp, double *yn, double *ynp, double *zn, double *znp, int *totparticles);
+void setcoords(double *xn, double *xnp, double *yn, double *ynp, double *zn, double *znp, int totparticles, int coordtype);
 void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma, double *deltap, int *totparticles);

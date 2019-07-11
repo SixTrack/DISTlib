@@ -90,7 +90,7 @@ program demodist
       call dist_setemitt12(e1,e2)
       call dist_setemitt3(e3)
       call dist_settasmatrix(tas)
-      call dist_setnormalizedcoords(xn, pxn,yn, pyn, zn, zpn, npart)
+      call dist_setcooords(xn, pxn,yn, pyn, zn, zpn, npart,1)
       call dist_get6trackcoord(x,xp,y,yp,sigma,deltap, npart)
    
       do i=1, 100

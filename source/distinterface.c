@@ -89,9 +89,10 @@ void settasmatrix(double *tas){
 	}
 }
 
-void setnormalizedcoords(double *xn, double *xpn, double *yn, double *ypn, double *zn, double *zpn, int *totparticles){
-	allocateincoord(*totparticles);
-	for(int i=0; i<*totparticles; i++){
+// 0 -action angle, 1- normalized coordinates, 2-physical, 3-mixed
+void setcoords(double *xn, double *xpn, double *yn, double *ypn, double *zn, double *zpn, int totparticles, int coordtype){
+	allocateincoord(totparticles);
+	for(int i=0; i<totparticles; i++){
 		dist->incoord[i]->normalized[0] = xn[i];
 		dist->incoord[i]->normalized[1] = xpn[i]; 
 		dist->incoord[i]->normalized[2] = yn[i];
@@ -100,8 +101,18 @@ void setnormalizedcoords(double *xn, double *xpn, double *yn, double *ypn, doubl
 		dist->incoord[i]->normalized[5] = zpn[i]; 
     }
 
-	dist->totincoord  =*totparticles;
-	dist->incoordtype = 1;
+	dist->totincoord  =totparticles;
+	dist->incoordtype = coordtype;
+}
+
+void settotalsteps(){
+
+}
+void setscan_para_diagonal(int variable, int type, int start, int stop){
+
+}
+void setscan_para_grid(int variable, int type, int start, int stop, int length){
+
 }
 
 void addclosedorbit(double *clo){

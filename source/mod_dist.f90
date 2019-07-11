@@ -11,7 +11,6 @@ subroutine dist_getrefpara(energy0,mass0,a0,z0) bind(C, name="getrefpara")
   integer(kind=C_INT), intent(inout) :: a0, z0
 end subroutine dist_getrefpara
 
-
 subroutine dist_writefile(fileName, strlen) bind(C, name="writefile_f")
   use, intrinsic :: iso_c_binding
   character(kind=C_CHAR,len=1), intent(in) :: fileName
@@ -77,11 +76,11 @@ subroutine dist_settasmatrix(tas) bind(C, name="settasmatrix")
   real(kind=C_DOUBLE),dimension(36), intent(in) :: tas
 end subroutine dist_settasmatrix
 
-subroutine dist_setnormalizedcoords(xn,xnp,yn,ynp,zn,znp,npart) bind(C, name="setnormalizedcoords")
+subroutine dist_setcooords(xn,xnp,yn,ynp,zn,znp,npart, coordtype) bind(C, name="setcoords")
   use, intrinsic :: iso_c_binding
   real(kind=C_DOUBLE),dimension(*), intent(in) :: xn,xnp,yn,ynp,zn,znp
-  integer(kind=C_INT), intent(in) :: npart
-end subroutine dist_setnormalizedcoords
+  integer(kind=C_INT),value,  intent(in) :: npart, coordtype
+end subroutine dist_setcooords
 
 end interface 
 end module

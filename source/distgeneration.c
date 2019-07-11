@@ -10,7 +10,7 @@
 
 
 void gensixcanonical(){
-                    printf("hjeegensixcanonicalgensixcanonicaleeeree  %d \n", dist->incoordtype);
+
     if(dist->incoordtype==0){ // action angle
         generatefromaction();
     }
@@ -45,7 +45,6 @@ void generatefromnormalized(){
                 dist->outcoord[counter]->physical[p] = cancoord[p];
             }
 
-            // Not nescessary at the moment but might be in the future.
             dist->outcoord[i]->mass  = dist->incoord[i]->mass;
             dist->outcoord[i]->a     = dist->incoord[i]->a;
             dist->outcoord[i]->z     = dist->incoord[i]->z;
@@ -71,12 +70,12 @@ void generatefromaction(){
         tc[5]=dist->incoord[i]->action[5];
         action2normalized(tc, normalized);
         normalized2canonical(normalized, cancoord);
-        if(particle_within_limits_physical(tc)==1){
+        if(particle_within_limits_physical(cancoord)==1 && particle_within_limits_normalized(normalized)){
             for(int p=0; p<dim; p++){
                 dist->outcoord[counter]->physical[p]   = cancoord[p];
                 dist->outcoord[counter]->normalized[p] = normalized[p];
             }
-            // Not nescessary at the moment but might be in the future.
+
             dist->outcoord[i]->mass  = dist->incoord[i]->mass;
             dist->outcoord[i]->a     = dist->incoord[i]->a;
             dist->outcoord[i]->z     = dist->incoord[i]->z;
@@ -128,7 +127,7 @@ void action2normalized(double acangl[6], double normalized[6]){
     normalized[2]= sqrt(acangl[2]/2)*cos(acangl[3]);
     normalized[3]=-sqrt(acangl[2]/2)*sin(acangl[3]);
     normalized[4]= sqrt(acangl[4]/2)*cos(acangl[5]);
-    normalized[5]=-sqrt(acangl[4]/2/1000)*sin(acangl[5]);
+    normalized[5]=-sqrt(acangl[4]/2)*sin(acangl[5]); // used to devide with 1000 here before.. 
 }
 
 void normalized2canonical(double normalized[6], double cancoord[6]){
@@ -191,3 +190,74 @@ int particle_within_limits_normalized(double *normalized){
     }
     return 1;
 }
+/*
+void createcoordinates(int index,  double start, double stop, int length, int type){
+
+    dist->coord[index-1]->start = start;
+    dist->coord[index-1]->stop = stop;
+    dist->coord[index-1]->length = length;
+    dist->coord[index-1]->type = type;
+//  dist->coord[index-1]->coordtype = coordtype;
+    
+
+    if(type ==0){ //Constant value 
+        dist->coord[index-1]->values = (double)malloc((length)sizeof(double));
+        dist->coord[index-1]->values[0] = start;
+        dist->coord[index-1]->length = 1; //if it is a constant the length should always be 1.
+    }
+
+    if(type > 0){ //Allocate space for the array
+        if(dist->disttype==1){
+            if(dist->totallength>0){
+                int tmp;
+                tmp=dist->totallength;
+                length=&tmp;
+                }
+            else
+                printf("You need to set a totallength for disttype 1!");
+        }
+        dist->coord[index-1]->values = (double)malloc((length)*sizeof(double));
+     //   memcpy(dist->coord[index-1]->values , start, sizeof(double));   //not sure 
+    }
+    if(type==1){ //Linearly spaced intervalls
+    
+        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+    }
+    if(type==2){ //Exponentially spaced
+        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+        for(int i=0;i <length; i++){
+               
+            dist->coord[index-1]->values[i] = exp(dist->coord[index-1]->values[i]);
+        }
+    }
+    if(type==3){ //Spaced with  ^2
+        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+        for(int i=0;i <length; i++){
+            dist->coord[index-1]->values[i] = pow(dist->coord[index-1]->values[i],2);
+        
+        }
+
+    }
+    if(type==4){ // uniform random 
+        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+        for(int i=0;i <length; i++){
+            dist->coord[index-1]->values[i] = rand_uni(start, stop);
+            //printf("%f \n", dist->coord[index-1]->values[i] );
+        }
+    }
+
+    if(type==5){ // Gaussian random (Here start is mean and stop is the standard deviation)
+        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+        for(int i=0;i <length; i++){
+            dist->coord[index-1]->values[i] = randn(start, stop);
+        }
+    }
+
+    if(type==6){ // Rayleigh distribution
+        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+        for(int i=0;i <length; i++){
+            dist->coord[index-1]->values[i] = randray(start, stop);
+
+        }
+    }
+}*/
