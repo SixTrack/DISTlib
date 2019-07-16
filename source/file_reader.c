@@ -112,9 +112,19 @@ int readfile(const char*  filename){
     allocateincoord(linecount); //alocates the memory
     fillcoordstructure(numcolum,columns, units, table); //fils the coordinate structures
     calculaterefparam(); //Sets up the necessary ref parameters and checks for consistensy. 
-    convert2standard(); // converts to the units used internal , x, px, y, py, zeta, deltap 
+    convert2standard(); // converts to the units used internal , x, px, y, py, zeta, deltap
+    checkinputtype();
     free_readin_memory(table);
     return 0;
+}
+void checkinputtype(){
+	if(dist->ref->typeused[0]==dist->ref->typeused[1]==dist->ref->typeused[2]==dist->ref->typeused[3]==dist->ref->typeused[4]==dist->ref->typeused[5])
+		dist->incoordtype=dist->ref->typeused[0];
+	else if(dist->ref->typeused[4]==2==dist->ref->typeused[5]==2 && dist->ref->typeused[0]==dist->ref->typeused[1]==dist->ref->typeused[2]==dist->ref->typeused[3]==0)
+		dist->incoordtype=3;
+	else
+		issue_error("Non comptable types have been entered.");
+
 }
 
 // This checks that reference energy is only set once and sets up the mass in case it is not a column
@@ -217,6 +227,10 @@ void convert2standard(){
 void allocateincoord(int linecount){
   dist->incoord = (struct coordinates**)malloc(linecount*sizeof(struct coordinates*));
   dist->outcoord = (struct coordinates**)malloc(linecount*sizeof(struct coordinates*));
+  dist->ref->typeused = (int*)malloc(dim*sizeof(int));
+  for(int i=0; i< dim; i++){
+  	dist->ref->typeused[i]=-1;
+  }
   dist->totincoord = linecount;
   for(int i=0; i<linecount; i++){
     dist->incoord[i] = (struct coordinates*)malloc(sizeof(struct coordinates));
@@ -235,8 +249,20 @@ void allocateincoord(int linecount){
 }
 
 
-void setreadin(int coordorder, int column, double ** table, double multifactor){
-
+void setreadin(int coordorder, int column, double ** table, double multifactor, int realorder){
+	if(dist->ref->typeused[realorder]!=-1){
+		issue_error("Only allowed to set one coordinates index ones");
+	}
+	
+	if(coordorder < 20){
+		dist->ref->typeused[realorder] = 2; 
+	}
+	else if(coordorder >= 20 <=25){
+		dist->ref->typeused[realorder] = 1;
+	}
+	else{
+		dist->ref->typeused[realorder] = 0;
+	}
   for(int i=0;i < dist->totincoord; i++){
     dist->incoord[i]->readin[coordorder] = multifactor*table[i][column];
   }
@@ -310,97 +336,97 @@ void fillcoordstructure(int numcolum, char columns[MAX_COLUMNS][MAX_LENGTH], cha
   for(int i=0; i< numcolum; i++){
      if(strcmp(columns[i], "x")==0){
       multifactor = getMetricUnit(units[i]);
-      setreadin(0, i, table, multifactor);
+      setreadin(0, i, table, multifactor, 0);
     }
     else if(strcmp(columns[i], "px")==0){
       checkifangset(0);
-      setreadin(1, i, table,1);
+      setreadin(1, i, table,1, 1);
     }
     else if(strcmp(columns[i], "y")==0){
       multifactor = getMetricUnit(units[i]);
-      setreadin(2, i, table, multifactor);
+      setreadin(2, i, table, multifactor, 2);
     }
     else if(strcmp(columns[i], "py")==0){
       checkifangset(0);
-      setreadin(3, i, table,1);
+      setreadin(3, i, table,1, 3);
     }
     else if(strcmp(columns[i], "zeta")==0){
       checkiftimeset(5);
       multifactor = getMetricUnit(units[i]);
-      setreadin(4, i, table, multifactor);
+      setreadin(4, i, table, multifactor, 4);
     }
     else if(strcmpnl(columns[i], "deltap")==0){
       checkifenergyset(5);
-      setreadin(5, i, table, 1);
+      setreadin(5, i, table, 1, 5);
     }
     else if(strcmp(columns[i], "energy")==0){
       multifactor = getEnergyUnit(units[i]);
       checkifenergyset(0);
       //setnonstandard(0, i, table);
-      setreadin(6, i, table, 1);
+      setreadin(6, i, table, 1, 5);
     }
      else if(strcmp(columns[i], "pc")==0){
       multifactor = getEnergyUnit(units[i]);
       checkifenergyset(1);
       //setnonstandard(1, i, table);
-      setreadin(7, i, table, 1);
+      setreadin(7, i, table, 1, 5);
     }
     else if(strcmp(columns[i], "psigma")==0){
       checkifenergyset(2);
      // setnonstandard(2, i, table);
-      setreadin(8, i, table, 1);
+      setreadin(8, i, table, 1, 5);
     }
     else if(strcmp(columns[i], "ptau")==0 || strcmp(columns[i], "pt")==0 ){
       checkifenergyset(3);
      // setnonstandard(3, i, table);
-      setreadin(9, i, table, 1);
+      setreadin(9, i, table, 1, 4);
     }
     else if(strcmp(columns[i], "sigma")==0){
       checkiftimeset(2);
       multifactor = getMetricUnit(units[i]);
       //setnonstandard(4, i, table);
-      setreadin(10, i, table, 1);
+      setreadin(10, i, table, 1, 4);
     }
     else if(strcmp(columns[i], "tau")==0 || strcmp(columns[i], "t")==0 ){
       checkiftimeset(3);
       multifactor = getMetricUnit(units[i]);
       //setnonstandard(5, i, table);
-      setreadin(11, i, table, 1);
+      setreadin(11, i, table, 1, 4);
     }
     else if(strcmp(columns[i], "xp")==0){
       checkifangset(1);
       //setnonstandard(6, i, table);
-      setreadin(12, i, table, 1);
+      setreadin(12, i, table, 1, 1);
     }
     else if(strcmp(columns[i], "yp")==0){
       checkifangset(1);
       //setnonstandard(7, i, table);
-      setreadin(13, i, table, 1);
+      setreadin(13, i, table, 1, 3);
     }
     else if(strcmp(columns[i], "jx")==0)
-      setreadin(20, i, table, 1);
+      setreadin(20, i, table, 1, 0);
     else if(strcmp(columns[i], "phix")==0)
-      setreadin(21, i, table, 1);
+      setreadin(21, i, table, 1, 1);
     else if(strcmp(columns[i], "jy")==0)
-      setreadin(22, i, table, 1);
+      setreadin(22, i, table, 1, 2);
     else if(strcmp(columns[i], "phiy")==0)
-      setreadin(23, i, table, 1);
+      setreadin(23, i, table, 1, 3);
     else if(strcmp(columns[i], "jz")==0)
-      setreadin(24, i, table, 1);
+      setreadin(24, i, table, 1, 4);
     else if(strcmp(columns[i], "phiz")==0)
-      setreadin(25, i, table, 1);
+      setreadin(25, i, table, 1, 5);
     else if(strcmp(columns[i], "xn")==0)
-      setreadin(26, i, table, 1);
+      setreadin(26, i, table, 1, 0);
     else if(strcmp(columns[i], "pxn")==0)
-      setreadin(27, i, table, 1);
+      setreadin(27, i, table, 1, 1);
     else if(strcmp(columns[i], "yn")==0)
-      setreadin(28, i, table, 1);
+      setreadin(28, i, table, 1, 2);
     else if(strcmp(columns[i], "pyn")==0)
-      setreadin(29, i, table, 1);
+      setreadin(29, i, table, 1, 3);
     else if(strcmp(columns[i], "zn")==0)
-      setreadin(30, i, table, 1);
+      setreadin(30, i, table, 1, 4);
     else if(strcmp(columns[i], "pzn")==0)
-      setreadin(31, i, table, 1);
+      setreadin(31, i, table, 1, 5);
     else if(strcmp(columns[i], "mass")==0){
       multifactor = getEnergyUnit(units[i]);
       for(int j=0;j < dist->totincoord; j++){

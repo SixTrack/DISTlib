@@ -27,6 +27,8 @@ struct refparam{
 	int time_like;
 	int ang_like;
 	struct emittances* emitt;
+	int *typeused; // This says which is used or a mixture of it.. (used for reading in and as a cross check)
+	// 0-action, 1-normalized, 2-physical
 
 };
 struct coordinates
@@ -37,8 +39,7 @@ struct coordinates
 	int charge;
 	int a;
 	int z;
-	int typeused; // This says which is used or a mixture of it..
-	// 0-action, 1-normalized, 2-physical, 3-actionangle + deltap and deltas  
+
 };
 
 struct parameters
