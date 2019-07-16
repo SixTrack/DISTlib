@@ -145,11 +145,17 @@ void getarraylength(int *totlength){
 
 void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma, double *deltap, int *totparticles){
     double tmp[6];
+    int nparticles;
     if(dist->isDistrcalculated ==0){
         gensixcanonical();
 
     }
-    for(int i=0; i<dist->totoutcoord; i++){
+    if(dist->totoutcoord < *totparticles)
+        nparticles = dist->totoutcoord;
+    else
+        nparticles = *totparticles;
+
+    for(int i=0; i < nparticles; i++){
         canonical2six(dist->outcoord[i]->physical, dist->ref->beta0, dist->ref->pc0, dist->ref->mass0, dist->incoord[i]->mass, tmp);
         x[i]  = tmp[0];
         xp[i] = tmp[1];
@@ -158,7 +164,7 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
         sigma[i]  = tmp[4];
         deltap[i] = tmp[5];
    }
-    *totparticles=dist->totoutcoord;
+    *totparticles=nparticles;
 }
 
 
