@@ -136,7 +136,7 @@ void setnormalizedcut(int variable, double min, double max){
 	dist->cuts2apply->normalized[variable-1]->isset=1;
 
 }
-void getlength(int *totlength){
+void getarraylength(int *totlength){
     if(dist->isDistrcalculated ==0){
         gensixcanonical();
     }

@@ -82,10 +82,10 @@ subroutine dist_setcooords(xn,xnp,yn,ynp,zn,znp,npart, coordtype) bind(C, name="
   integer(kind=C_INT),value,  intent(in) :: npart, coordtype
 end subroutine dist_setcooords
 
-subroutine dist_getlength(totlength) bind(C, name="getlength")
+subroutine dist_getarraylength(totlength) bind(C, name="dist_getarraylength")
   use, intrinsic :: iso_c_binding
   integer(kind=C_INT), intent(out) :: totlength
-end subroutine dist_getlength
+end subroutine dist_getarraylength
 
 
 end interface 
