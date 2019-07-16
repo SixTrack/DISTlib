@@ -31,10 +31,8 @@ struct refparam{
 };
 struct coordinates
 {
-	double *action;
-	double *normalized;
-	double *physical;
-	double *nonstandard;
+	double *coord;
+	double *readin;
 	double mass;
 	int charge;
 	int a;

@@ -156,28 +156,34 @@ void calculaterefparam(){
 
 //Converts to the internal used canonical 
 void convert2standard(){
-
+	for(int i=0; i<dist->totincoord; i++){
+  		for(int j=0; j<6; j++){
+  			dist->incoord[i]->coord[j]= dist->incoord[i]->readin[j]; // have to have checks here..! 
+  			printf("theesees variables %f", dist->incoord[i]->coord[j]);
+  		}
+  	}
+  
   if(dist->ref->en_like==-1){
     issue_info("No energy variable is set. Assume 0 deviation from reference energy \n");
   }
   else if(dist->ref->en_like==0){ //energy
     for(int i=0; i< dist->totincoord; i++){
-      dist->incoord[i]->physical[5] = (momentum2energy(dist->incoord[i]->nonstandard[0], dist->incoord[i]->mass)-(dist->ref->pc0))/(dist->ref->pc0);
+      dist->incoord[i]->coord[5] = (momentum2energy(dist->incoord[i]->readin[6], dist->incoord[i]->mass)-(dist->ref->pc0))/(dist->ref->pc0);
     }  
   }
   else if(dist->ref->en_like==1){ //momentum
     for(int i=0; i< dist->totincoord; i++){
-      dist->incoord[i]->physical[5] = ((dist->incoord[i]->nonstandard[1], dist->incoord[i]->mass)-(dist->ref->pc0))/(dist->ref->pc0);
+      dist->incoord[i]->coord[5] = ((dist->incoord[i]->readin[7], dist->incoord[i]->mass)-(dist->ref->pc0))/(dist->ref->pc0);
     }  
   }
   else if(dist->ref->en_like==2){ //psigma
     for(int i=0; i< dist->totincoord; i++){
-      dist->incoord[i]->physical[5] = psigma2deltap(dist->incoord[i]->nonstandard[2], dist->ref->beta0);
+      dist->incoord[i]->coord[5] = psigma2deltap(dist->incoord[i]->readin[8], dist->ref->beta0);
     }  
   }
   else if(dist->ref->en_like==3){ //pt
     for(int i=0; i< dist->totincoord; i++){
-      dist->incoord[i]->physical[5] = pt2deltap(dist->incoord[i]->nonstandard[3], dist->ref->beta0);
+      dist->incoord[i]->coord[5] = pt2deltap(dist->incoord[i]->readin[9], dist->ref->beta0);
     }
   }
 
@@ -187,14 +193,14 @@ void convert2standard(){
   else if(dist->ref->time_like==2){ //sigma
     double beta, pc;
     for(int i=0; i< dist->totincoord; i++){
-      pc = dist->ref->pc0+dist->incoord[i]->physical[5];
+      pc = dist->ref->pc0+dist->incoord[i]->coord[5];
       beta = (pc)/momentum2energy(pc, dist->incoord[i]->mass);
-      dist->incoord[i]->physical[4] = sigma2zeta(dist->incoord[i]->nonstandard[4], dist->ref->beta0, beta);
+      dist->incoord[i]->coord[4] = sigma2zeta(dist->incoord[i]->readin[10], dist->ref->beta0, beta);
     }  
   }
   else if(dist->ref->time_like==3){ //t or tau
     for(int i=0; i< dist->totincoord; i++){
-      dist->incoord[i]->physical[4] = tau2zeta(dist->incoord[i]->nonstandard[5], dist->ref->beta0);
+      dist->incoord[i]->coord[4] = tau2zeta(dist->incoord[i]->readin[11], dist->ref->beta0);
     }
   }
   if(dist->ref->ang_like==-1){
@@ -202,8 +208,8 @@ void convert2standard(){
   }
   else if(dist->ref->ang_like==1){ //t or tau
     for(int i=0; i< dist->totincoord; i++){
-      dist->incoord[i]->physical[1] = dist->incoord[i]->physical[6]/(1+dist->incoord[i]->physical[5]);
-      dist->incoord[i]->physical[3] = dist->incoord[i]->physical[7]/(1+dist->incoord[i]->physical[5]);
+      dist->incoord[i]->coord[1] = dist->incoord[i]->coord[6]/(1+dist->incoord[i]->coord[5]);
+      dist->incoord[i]->coord[3] = dist->incoord[i]->coord[7]/(1+dist->incoord[i]->coord[5]);
     }
   }
 }
@@ -214,45 +220,25 @@ void allocateincoord(int linecount){
   dist->totincoord = linecount;
   for(int i=0; i<linecount; i++){
     dist->incoord[i] = (struct coordinates*)malloc(sizeof(struct coordinates));
-    dist->incoord[i]->physical = (double*)malloc(dim*sizeof(double));
-    dist->incoord[i]->normalized = (double*)malloc(dim*sizeof(double));
-    dist->incoord[i]->action = (double*)malloc(dim*sizeof(double));
-    dist->incoord[i]->nonstandard = (double*)malloc(9*sizeof(double));
+    
+    dist->incoord[i]->coord = (double*)malloc(dim*sizeof(double));
+    dist->incoord[i]->readin = (double*)malloc(32*sizeof(double));
 
     dist->incoord[i]->mass=0;
     dist->incoord[i]->a=0;
     dist->incoord[i]->z=0;
 
     dist->outcoord[i] = (struct coordinates*)malloc(sizeof(struct coordinates));
-    dist->outcoord[i]->physical = (double*)malloc(dim*sizeof(double));
-    dist->outcoord[i]->normalized = (double*)malloc(dim*sizeof(double));
-    dist->outcoord[i]->action = (double*)malloc(dim*sizeof(double));
-    dist->outcoord[i]->nonstandard = (double*)malloc(9*sizeof(double));
+    dist->outcoord[i]->coord = (double*)malloc(dim*sizeof(double));
+
   }
 }
 
-void setphysical(int coordorder, int column, double ** table, double multifactor){
+
+void setreadin(int coordorder, int column, double ** table, double multifactor){
 
   for(int i=0;i < dist->totincoord; i++){
-    dist->incoord[i]->physical[coordorder] = multifactor*table[i][column];
-  }
-}
-void setnormalized(int coordorder, int column, double ** table){
-
-  for(int i=0;i < dist->totincoord; i++){
-    dist->incoord[i]->normalized[coordorder] = table[i][column];
-  }
-}
-void setaction(int coordorder, int column, double ** table){
-
-  for(int i=0;i < dist->totincoord; i++){
-    dist->incoord[i]->action[coordorder] = table[i][column];
-  }
-}
-
-void setnonstandard(int coordorder, int column, double ** table){
-  for(int i=0;i < dist->totincoord; i++){
-    dist->incoord[i]->nonstandard[coordorder] = table[i][column];
+    dist->incoord[i]->readin[coordorder] = multifactor*table[i][column];
   }
 }
 
@@ -324,94 +310,102 @@ void fillcoordstructure(int numcolum, char columns[MAX_COLUMNS][MAX_LENGTH], cha
   for(int i=0; i< numcolum; i++){
      if(strcmp(columns[i], "x")==0){
       multifactor = getMetricUnit(units[i]);
-      setphysical(0, i, table, multifactor);
+      setreadin(0, i, table, multifactor);
     }
     else if(strcmp(columns[i], "px")==0){
       checkifangset(0);
-      setphysical(1, i, table,1);
+      setreadin(1, i, table,1);
     }
     else if(strcmp(columns[i], "y")==0){
       multifactor = getMetricUnit(units[i]);
-      setphysical(2, i, table, multifactor);
+      setreadin(2, i, table, multifactor);
     }
     else if(strcmp(columns[i], "py")==0){
       checkifangset(0);
-      setphysical(3, i, table,1);
+      setreadin(3, i, table,1);
     }
     else if(strcmp(columns[i], "zeta")==0){
       checkiftimeset(5);
       multifactor = getMetricUnit(units[i]);
-      setphysical(4, i, table, multifactor);
+      setreadin(4, i, table, multifactor);
     }
     else if(strcmpnl(columns[i], "deltap")==0){
       checkifenergyset(5);
-      setphysical(5, i, table, 1);
+      setreadin(5, i, table, 1);
     }
     else if(strcmp(columns[i], "energy")==0){
       multifactor = getEnergyUnit(units[i]);
       checkifenergyset(0);
-      setnonstandard(0, i, table);
+      //setnonstandard(0, i, table);
+      setreadin(6, i, table, 1);
     }
      else if(strcmp(columns[i], "pc")==0){
       multifactor = getEnergyUnit(units[i]);
       checkifenergyset(1);
-      setnonstandard(1, i, table);
+      //setnonstandard(1, i, table);
+      setreadin(7, i, table, 1);
     }
     else if(strcmp(columns[i], "psigma")==0){
       checkifenergyset(2);
-      setnonstandard(2, i, table);
+     // setnonstandard(2, i, table);
+      setreadin(8, i, table, 1);
     }
     else if(strcmp(columns[i], "ptau")==0 || strcmp(columns[i], "pt")==0 ){
       checkifenergyset(3);
-      setnonstandard(3, i, table);
+     // setnonstandard(3, i, table);
+      setreadin(9, i, table, 1);
     }
     else if(strcmp(columns[i], "sigma")==0){
       checkiftimeset(2);
       multifactor = getMetricUnit(units[i]);
-      setnonstandard(4, i, table);
+      //setnonstandard(4, i, table);
+      setreadin(10, i, table, 1);
     }
     else if(strcmp(columns[i], "tau")==0 || strcmp(columns[i], "t")==0 ){
       checkiftimeset(3);
       multifactor = getMetricUnit(units[i]);
-      setnonstandard(5, i, table);
+      //setnonstandard(5, i, table);
+      setreadin(11, i, table, 1);
     }
     else if(strcmp(columns[i], "xp")==0){
       checkifangset(1);
-      setnonstandard(6, i, table);
+      //setnonstandard(6, i, table);
+      setreadin(12, i, table, 1);
     }
     else if(strcmp(columns[i], "yp")==0){
       checkifangset(1);
-      setnonstandard(7, i, table);
+      //setnonstandard(7, i, table);
+      setreadin(13, i, table, 1);
     }
     else if(strcmp(columns[i], "jx")==0)
-      setaction(0, i, table);
+      setreadin(20, i, table, 1);
     else if(strcmp(columns[i], "phix")==0)
-      setaction(1, i, table);
+      setreadin(21, i, table, 1);
     else if(strcmp(columns[i], "jy")==0)
-      setaction(2, i, table);
+      setreadin(22, i, table, 1);
     else if(strcmp(columns[i], "phiy")==0)
-      setaction(3, i, table);
+      setreadin(23, i, table, 1);
     else if(strcmp(columns[i], "jz")==0)
-      setaction(4, i, table);
+      setreadin(24, i, table, 1);
     else if(strcmp(columns[i], "phiz")==0)
-      setaction(5, i, table);
+      setreadin(25, i, table, 1);
     else if(strcmp(columns[i], "xn")==0)
-      setnormalized(0, i, table);
+      setreadin(26, i, table, 1);
     else if(strcmp(columns[i], "pxn")==0)
-      setnormalized(1, i, table);
+      setreadin(27, i, table, 1);
     else if(strcmp(columns[i], "yn")==0)
-      setnormalized(2, i, table);
+      setreadin(28, i, table, 1);
     else if(strcmp(columns[i], "pyn")==0)
-      setnormalized(3, i, table);
+      setreadin(29, i, table, 1);
     else if(strcmp(columns[i], "zn")==0)
-      setnormalized(4, i, table);
+      setreadin(30, i, table, 1);
     else if(strcmp(columns[i], "pzn")==0)
-      setnormalized(5, i, table);
+      setreadin(31, i, table, 1);
     else if(strcmp(columns[i], "mass")==0){
       multifactor = getEnergyUnit(units[i]);
       for(int j=0;j < dist->totincoord; j++){
         dist->incoord[j]->mass = multifactor*table[j][i];
-      }
+      }	
     }
     else if(strcmp(columns[i], "a")==0){
       for(int j=0;j < dist->totincoord; j++){

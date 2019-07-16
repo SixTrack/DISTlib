@@ -11,71 +11,39 @@
 
 void gensixcanonical(){
 
-    if(dist->incoordtype==0){ // action angle
-        generatefromaction();
-    }
-    else if(dist->incoordtype==1){ //normalized coordinates
-
-        generatefromnormalized();
-    }
-    else if(dist->incoordtype==2){ //physical coord
-        generatefromphysical();
-    }
-    else if(dist->incoordtype==3){ // mixed coord
-        generatefrommixed();
-    }
-}
-
-void generatefromnormalized(){
-    int counter = 0;
+	int counter = 0;
+    int type = dist->incoordtype;
     double tc[dim];
     double normalized[dim], cancoord[dim];
 
     for(int i =0; i< dist->totincoord; i++){
-        normalized[0]=dist->incoord[i]->normalized[0];
-        normalized[1]=dist->incoord[i]->normalized[1];
-        normalized[2]=dist->incoord[i]->normalized[2];
-        normalized[3]=dist->incoord[i]->normalized[3];
-        normalized[4]=dist->incoord[i]->normalized[4];
-        normalized[5]=dist->incoord[i]->normalized[5];
-        normalized2canonical(normalized, cancoord);
+    	for(int k=0; k<6; k++){
+    		tc[k]=dist->incoord[i]->coord[k];
+    	}
+    	
 
-        if(particle_within_limits_physical(cancoord)==1){
-            for(int p=0; p<dim; p++){
-                dist->outcoord[counter]->physical[p] = cancoord[p];
-            }
-
-            dist->outcoord[i]->mass  = dist->incoord[i]->mass;
-            dist->outcoord[i]->a     = dist->incoord[i]->a;
-            dist->outcoord[i]->z     = dist->incoord[i]->z;
-            counter++;
+        if(type==0 || type==3){
+        	action2normalized(tc, normalized);
+        	normalized2canonical(normalized, cancoord);
         }
-    }
-    dist->totoutcoord=counter;
-    dist->isDistrcalculated=1;
-}
+        else if(type==1){
+	        for(int k=0; k<6; k++){
+	    		normalized[k] = tc[k];
+	        	normalized2canonical(tc, cancoord);
+	    	}
+	    }
+	    else if(type==2){
+			for(int k=0; k<6; k++){
+    			cancoord[k]=tc[k];
+    		}
 
-void generatefromaction(){
-    int counter = 0;
-    double tc[dim];
-    double normalized[dim], cancoord[dim];
+	    }
 
-    for(int i =0; i< dist->totincoord; i++){
 
-        tc[0]=dist->incoord[i]->action[0];
-        tc[1]=dist->incoord[i]->action[1];
-        tc[2]=dist->incoord[i]->action[2];
-        tc[3]=dist->incoord[i]->action[3];
-        tc[4]=dist->incoord[i]->action[4];
-        tc[5]=dist->incoord[i]->action[5];
-        action2normalized(tc, normalized);
-        normalized2canonical(normalized, cancoord);
         if(particle_within_limits_physical(cancoord)==1 && particle_within_limits_normalized(normalized)){
             for(int p=0; p<dim; p++){
-                dist->outcoord[counter]->physical[p]   = cancoord[p];
-                dist->outcoord[counter]->normalized[p] = normalized[p];
+                dist->outcoord[counter]->coord[p]   = cancoord[p];
             }
-
             dist->outcoord[i]->mass  = dist->incoord[i]->mass;
             dist->outcoord[i]->a     = dist->incoord[i]->a;
             dist->outcoord[i]->z     = dist->incoord[i]->z;
@@ -84,39 +52,7 @@ void generatefromaction(){
     }
     dist->totoutcoord=counter;
     dist->isDistrcalculated=1;
-}
 
-void generatefrommixed(){
-
-}
-
-
-void generatefromphysical(){
-    int counter = 0;
-    double tc[dim];
-    double tmp_n[dim];
-
-    for(int i =0; i< dist->totincoord; i++){
-        tc[0]=dist->incoord[i]->physical[0];
-        tc[1]=dist->incoord[i]->physical[1];
-        tc[2]=dist->incoord[i]->physical[2];
-        tc[3]=dist->incoord[i]->physical[3];
-        tc[4]=dist->incoord[i]->physical[4];
-        tc[5]=dist->incoord[i]->physical[5];
-        
-        if(particle_within_limits_physical(tc)==1){
-            for(int p=0; p<dim; p++){
-                dist->outcoord[counter]->physical[p] = tc[p];
-            }
-            // Not nescessary at the moment but might be in the future.
-            dist->outcoord[i]->mass  = dist->incoord[i]->mass;
-            dist->outcoord[i]->a     = dist->incoord[i]->a;
-            dist->outcoord[i]->z     = dist->incoord[i]->z;
-            counter++;
-        }
-    }
-    dist->totoutcoord=counter;
-    dist->isDistrcalculated=1;
 }
 
 /*If emittance is defined it converts to canonical coordinates */
@@ -160,7 +96,6 @@ void normalized2canonical(double normalized[6], double cancoord[6]){
         normalized[5] = xap[1];
 
     }
-
     mtrx_vector_mult_pointer(dim,dim, dist->tas, normalized,cancoord);
 
 }
@@ -179,6 +114,7 @@ int particle_within_limits_physical(double *physical){
     return 1;
 
 }
+
 /*Checks if the particle is within the normalized limit set by the user*/
 int particle_within_limits_normalized(double *normalized){
     

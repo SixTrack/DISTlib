@@ -93,12 +93,12 @@ void settasmatrix(double *tas){
 void setcoords(double *xn, double *xpn, double *yn, double *ypn, double *zn, double *zpn, int totparticles, int coordtype){
 	allocateincoord(totparticles);
 	for(int i=0; i<totparticles; i++){
-		dist->incoord[i]->normalized[0] = xn[i];
-		dist->incoord[i]->normalized[1] = xpn[i]; 
-		dist->incoord[i]->normalized[2] = yn[i];
-		dist->incoord[i]->normalized[3] = ypn[i];
-		dist->incoord[i]->normalized[4] = zn[i];
-		dist->incoord[i]->normalized[5] = zpn[i]; 
+		dist->incoord[i]->coord[0] = xn[i];
+		dist->incoord[i]->coord[1] = xpn[i]; 
+		dist->incoord[i]->coord[2] = yn[i];
+		dist->incoord[i]->coord[3] = ypn[i];
+		dist->incoord[i]->coord[4] = zn[i];
+		dist->incoord[i]->coord[5] = zpn[i]; 
     }
 
 	dist->totincoord  =totparticles;
@@ -156,7 +156,7 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
         nparticles = *totparticles;
 
     for(int i=0; i < nparticles; i++){
-        canonical2six(dist->outcoord[i]->physical, dist->ref->beta0, dist->ref->pc0, dist->ref->mass0, dist->incoord[i]->mass, tmp);
+        canonical2six(dist->outcoord[i]->coord, dist->ref->beta0, dist->ref->pc0, dist->ref->mass0, dist->incoord[i]->mass, tmp);
         x[i]  = tmp[0];
         xp[i] = tmp[1];
         y[i]  = tmp[2];

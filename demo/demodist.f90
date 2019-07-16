@@ -62,6 +62,7 @@ program demodist
 
       call dist_initializedistribution(3)
       ! Set the tas matrix 
+   
       strlen = LEN_TRIM(filename) 
       call dist_readfile(filename,strlen)
       call dist_getrefpara(energy0, mass0, a0, z0)
@@ -80,10 +81,12 @@ program demodist
       filename = '../out_test-track_ap_collimator.obs0001.p0001'
       strlen = LEN_TRIM(filename) 
       call dist_readfile(filename,strlen)
- npart = 1000000
+      npart = 1000000
       fileout = 'fromMadx_out.txt'
       strlen = LEN_TRIM(fileout) 
+  
       call dist_writefile(fileout, strlen)
+      goto 100
       call dist_setdistribution(2)
   
       call dist_sete0andmass0(energy0, mass0 )
@@ -96,7 +99,7 @@ program demodist
       do i=1, 100
       print *, x(i),xp(i),y(i),yp(i),sigma(i),deltap(i) 
       enddo
-
+100 continue
     !Distribution 2: a matched distribution
 
     ! Change the distribution to 1
