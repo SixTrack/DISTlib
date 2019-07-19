@@ -121,9 +121,24 @@ void checkinputtype(){
 	if(dist->ref->typeused[0]==dist->ref->typeused[1]==dist->ref->typeused[2]==dist->ref->typeused[3]==dist->ref->typeused[4]==dist->ref->typeused[5])
 		dist->incoordtype=dist->ref->typeused[0];
 	else if(dist->ref->typeused[4]==2==dist->ref->typeused[5]==2 && dist->ref->typeused[0]==dist->ref->typeused[1]==dist->ref->typeused[2]==dist->ref->typeused[3]==0)
-		dist->incoordtype=3;
+		dist->incoordtype=3; //Mixed with action angle coordinates
+	else if(dist->ref->typeused[4]==2==dist->ref->typeused[5]==2 && dist->ref->typeused[0]==dist->ref->typeused[1]==dist->ref->typeused[2]==dist->ref->typeused[3]==1)
+		dist->incoordtype=4; //Mixed with normalised coordinates
 	else
 		issue_error("Non comptable types have been entered.");
+
+	if(dist->incoordtype==0){
+
+	}
+	else if(dist->incoordtype==1){
+
+	}
+	else if(dist->incoordtype==3){
+
+	}
+	else if(dist->incoordtype==4){
+
+	}
 
 }
 
@@ -227,11 +242,10 @@ void convert2standard(){
 void allocateincoord(int linecount){
   dist->incoord = (struct coordinates**)malloc(linecount*sizeof(struct coordinates*));
   dist->outcoord = (struct coordinates**)malloc(linecount*sizeof(struct coordinates*));
-  dist->ref->typeused = (int*)malloc(dim*sizeof(int));
+  dist->totincoord = linecount;
   for(int i=0; i< dim; i++){
   	dist->ref->typeused[i]=-1;
   }
-  dist->totincoord = linecount;
   for(int i=0; i<linecount; i++){
     dist->incoord[i] = (struct coordinates*)malloc(sizeof(struct coordinates));
     
@@ -246,7 +260,28 @@ void allocateincoord(int linecount){
     dist->outcoord[i]->coord = (double*)malloc(dim*sizeof(double));
 
   }
+  dist->isallocated =1;
 }
+void deallocateincoord(){
+
+
+  for(int i=0; i<dist->totincoord; i++){
+
+    free(dist->incoord[i]->coord);
+    free(dist->incoord[i]->readin);
+    free(dist->incoord[i]);
+    free(dist->outcoord[i]->coord);
+    free(dist->outcoord[i]); 
+
+  }
+
+  free(dist->incoord); 
+  free(dist->outcoord); 
+  //dist->ref->typeused = (int*)malloc(dim*sizeof(int));
+  dist->isallocated =0;
+  dist->totincoord = -1;
+}
+
 
 
 void setreadin(int coordorder, int column, double ** table, double multifactor, int realorder){

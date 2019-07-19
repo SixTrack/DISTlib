@@ -82,10 +82,29 @@ subroutine dist_setcooords(xn,xnp,yn,ynp,zn,znp,npart, coordtype) bind(C, name="
   integer(kind=C_INT),value,  intent(in) :: npart, coordtype
 end subroutine dist_setcooords
 
-subroutine dist_getarraylength(totlength) bind(C, name="dist_getarraylength")
+subroutine dist_getarraylength(totlength) bind(C, name="getarraylength")
   use, intrinsic :: iso_c_binding
   integer(kind=C_INT), intent(out) :: totlength
 end subroutine dist_getarraylength
+
+subroutine dist_settotalsteps(totlength) bind(C, name="settotalsteps")
+  use, intrinsic :: iso_c_binding
+  integer(kind=C_INT), value, intent(in) :: totlength
+end subroutine dist_settotalsteps
+
+subroutine dist_setscan_para_diagonal(variable, variable_type, space_type, start_value, stop_value) &
+ bind(C, name="setscan_para_diagonal")
+  use, intrinsic :: iso_c_binding
+  integer(kind=C_INT), value, intent(in) :: variable, variable_type, space_type
+  real(kind=C_DOUBLE), value, intent(in) :: start_value, stop_value
+end subroutine dist_setscan_para_diagonal
+
+subroutine dist_setscan_para_grid(variable, variable_type, space_type, start_value, stop_value, length) &
+bind(C, name="setscan_para_diagonal")
+  use, intrinsic :: iso_c_binding
+  integer(kind=C_INT), value, intent(in) :: variable, variable_type, space_type, length
+  real(kind=C_DOUBLE), value, intent(in) :: start_value, stop_value
+end subroutine dist_setscan_para_grid
 
 
 end interface 

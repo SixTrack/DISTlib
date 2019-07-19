@@ -38,7 +38,8 @@ void initializedistribution(int numberOfDist){
 		(dist + i)->ref->en_like=-1;
         (dist + i)->ref->time_like=-1;
         (dist + i)->ref->ang_like=-1;
-
+        (dist + i)->totincoord=-1;
+        (dist + i)->ref->typeused = (int*)malloc(dim*sizeof(int));
         for(int k=0; k<dim;k++){
             (dist + i)->tas[k] =(double*)malloc(dim*sizeof(double));
             (dist + i)->invtas[k] =(double*)malloc(dim*sizeof(double));
@@ -105,13 +106,37 @@ void setcoords(double *xn, double *xpn, double *yn, double *ypn, double *zn, dou
 	dist->incoordtype = coordtype;
 }
 
-void settotalsteps(){
-
+void settotalsteps(int totgenerate){
+    dist->totincoord = totgenerate;
 }
-void setscan_para_diagonal(int variable, int type, int start, int stop){
 
+void setscan_para_diagonal(int variable, int variable_type, int type, double start, double stop){
+    if(dist->totincoord==-1)
+        issue_error("Must set a total steps before you can set a parameter");
+
+    if(dist->isallocated!=1){
+        printf("alllocating %d \n", dist->totincoord);
+        allocateincoord(dist->totincoord);
+    }
+    dist->ref->typeused[variable] =  variable_type;
+    dist->incoordtype=variable_type;
+    printf("befoooreee creatinnnnggg \n");
+    createcoordinates(variable, start, stop, dist->totincoord,type);
+    printf("affferere creatinnnnggg \n");
 }
-void setscan_para_grid(int variable, int type, int start, int stop, int length){
+
+void setscan_para_grid(int variable,int variable_type,int type, double start, double stop, int length){
+    dist->ref->readinlength[variable] = length;
+
+
+    if(length>MAX_LENGTH)
+        issue_error("For grid scans you have requested to many particles.");
+    if(dist->isallocated!=1)
+        allocateincoord(MAX_LENGTH);
+
+    dist->ref->typeused[variable] =  variable_type;
+    createcoordinates(variable, start, stop, dist->totincoord,type);
+    dist->ref->grid=1;
 
 }
 
@@ -120,6 +145,7 @@ void addclosedorbit(double *clo){
 		dist->closedorbit[i] = clo[i];
     }
 }
+
 
 void setphysicalcut(int variable, double min, double max){
 	dist->cuts2apply->isset_p=1;
@@ -138,6 +164,7 @@ void setnormalizedcut(int variable, double min, double max){
 }
 void getarraylength(int *totlength){
     if(dist->isDistrcalculated ==0){
+
         gensixcanonical();
     }
     *totlength=dist->totoutcoord;

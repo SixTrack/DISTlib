@@ -14,3 +14,5 @@ double getMetricUnit(char *unit);
 void fillcoordstructure(int numcolum, char columns[MAX_COLUMNS][MAX_LENGTH], char units[MAX_COLUMNS][MAX_LENGTH], double **table);
 void free_readin_memory(double **table);
 void checkinputtype();
+void deallocateincoord();
+void allocateincoord();

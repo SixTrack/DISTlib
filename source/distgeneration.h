@@ -10,9 +10,11 @@ struct distparam
 	int incoordtype; // This tells which type of coordinates the input is given.  // 0-action angle, 1-Normalized, 2-physical, 3-mixed action angle and physical (lat)
 	struct coordinates** incoord;
 	struct coordinates** outcoord;
+	struct coordinates** gridin;
 	int totincoord;
 	int totoutcoord;
 	int isDistrcalculated;
+	int isallocated;
 	struct appliedcut* cuts2apply;
 };
 struct refparam{
@@ -29,6 +31,8 @@ struct refparam{
 	struct emittances* emitt;
 	int *typeused; // This says which is used or a mixture of it.. (used for reading in and as a cross check)
 	// 0-action, 1-normalized, 2-physical
+	int *readinlength;
+	int grid;
 
 };
 struct coordinates
@@ -79,3 +83,9 @@ void generatefromaction();
 void generatefromphysical();
 void action2normalized(double acangl[6], double normalized[6]);
 void normalized2canonical(double normalized[6], double cancoord[6]);
+double randn(double mu, double sigma);
+double rand_uni(double low, double high);
+void createLinearSpaced(int length, double start, double stop, double *eqspaced );
+double randray(double mu, double sigma);
+void createcoordinates(int index,  double start, double stop, int length, int type);
+int gettotalgridlength();

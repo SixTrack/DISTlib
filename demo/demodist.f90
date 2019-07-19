@@ -56,54 +56,37 @@ program demodist
       enddo
       
 
-      filename = '../format_example1.txt'
-      fileout  = 'format1_out.txt'
+      npart =1000
       ! Initialize 3 distributions with dimenstion 6
 
-      call dist_initializedistribution(3)
-      ! Set the tas matrix 
-   
-      strlen = LEN_TRIM(filename) 
-      call dist_readfile(filename,strlen)
-      call dist_getrefpara(energy0, mass0, a0, z0)
-      print *, "energy0, mass0, a0, z0 ", energy0, mass0, a0, z0
-      
-      call dist_addclosedorbit(closed)
-      call dist_get6trackcoord(x,xp,y,yp,sigma,deltap, npart)
-      do i=1,npart
-        print *, x(i),y(i),sigma(i)
-      enddo
-      strlen = LEN_TRIM(fileout) 
-      call dist_writefile(fileout, strlen)
-
-! Reads the track file (added mass 2 it)
-      call dist_setdistribution(1)
-      filename = '../out_test-track_ap_collimator.obs0001.p0001'
-      strlen = LEN_TRIM(filename) 
-      call dist_readfile(filename,strlen)
-      npart = 1000000
-      fileout = 'fromMadx_out.txt'
-      strlen = LEN_TRIM(fileout) 
-  
-      call dist_writefile(fileout, strlen)
-      goto 100
-      call dist_setdistribution(2)
-  
-      call dist_sete0andmass0(energy0, mass0 )
+    call dist_initializedistribution(3)
+    ! Set the tas matrix 
+         
       call dist_setemitt12(e1,e2)
       call dist_setemitt3(e3)
       call dist_settasmatrix(tas)
-      call dist_setcooords(xn, pxn,yn, pyn, zn, zpn, npart,1)
+
+      call dist_sete0andmass0(energy0, mass0 )
+      call dist_settotalsteps(npart)
+      call dist_setscan_para_diagonal(0,0,6,zero,one);
+      call dist_setscan_para_diagonal(1,0,4,zero,pia2);
+      call dist_setscan_para_diagonal(2,0,6,zero,one);
+      call dist_setscan_para_diagonal(3,0,4,zero,pia2);
+      call dist_setscan_para_diagonal(4,0,6,zero,one);
+      call dist_setscan_para_diagonal(5,0,4,zero,pia2);
+
+
+      
       call dist_get6trackcoord(x,xp,y,yp,sigma,deltap, npart)
    
-      do i=1, 100
+      do i=1, 50
       print *, x(i),xp(i),y(i),yp(i),sigma(i),deltap(i) 
       enddo
-100 continue
+
     !Distribution 2: a matched distribution
 
     ! Change the distribution to 1
-!   call setdistribution(1)
+!    call setdistribution(1)
 !    call settasmatrix(tas)
 !    call setemittance12(e1,e2)
 !    call setemittance3(e3)

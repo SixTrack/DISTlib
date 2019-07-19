@@ -6,7 +6,7 @@
 #include "distgeneration.h"
 #include "distinterface.h"
 #include "outputdist.h"
-
+#include "file_reader.h"
 
 
 void gensixcanonical(){
@@ -15,16 +15,22 @@ void gensixcanonical(){
     int type = dist->incoordtype;
     double tc[dim];
     double normalized[dim], cancoord[dim];
+    if(dist->ref->grid==1){
+    	//generate a grid
+    }
 
     for(int i =0; i< dist->totincoord; i++){
     	for(int k=0; k<6; k++){
     		tc[k]=dist->incoord[i]->coord[k];
+
     	}
     	
 
         if(type==0 || type==3){
         	action2normalized(tc, normalized);
+
         	normalized2canonical(normalized, cancoord);
+        	printf("tcccccc %f \n", cancoord[0]);
         }
         else if(type==1){
 	        for(int k=0; k<6; k++){
@@ -54,6 +60,57 @@ void gensixcanonical(){
     dist->isDistrcalculated=1;
 
 }
+int gettotalgridlength(){
+	int totlength=1;
+	for(int i=0; i<dim; i++){
+		totlength=totlength*dist->ref->readinlength[i];
+	}
+	dist->totincoord=totlength;
+	return totlength;
+}
+void dist2sixcoord_(){
+    int counter = 0;
+    double tc[6];
+    double tmp[6];
+    double tmp_n[6];
+    double **readin;
+    int totallenght = gettotalgridlength();
+    readin = (double**)malloc(dim*sizeof(double*));
+    for(int i=0; i<dim; i++){
+    	readin[i] = (double*)malloc(dist->ref->readinlength[i]*sizeof(double));
+    	memcpy(readin[i],dist->incoord[i]->coord, dist->ref->readinlength[i]*sizeof(double));
+    }
+    deallocateincoord();
+    allocateincoord(totallenght);
+
+    //dist->distout_normalized = (double**)malloc(getupperbound()*sizeof(double*));
+
+    for(int i =0; i< dist->ref->readinlength[0]; i++){
+        for(int j =0; j< dist->ref->readinlength[1]; j++){
+            for(int k =0; k< dist->ref->readinlength[2]; k++){
+                for(int l =0; l<dist->ref->readinlength[3]; l++){
+                    for(int m =0; m< dist->ref->readinlength[4]; m++){
+                        for(int n =0; n< dist->ref->readinlength[5]; n++){
+                            dist->incoord[counter]->coord[0]=readin[0][i];
+                            dist->incoord[counter]->coord[1]=readin[1][j];
+                            dist->incoord[counter]->coord[2]=readin[2][k];
+                            dist->incoord[counter]->coord[3]=readin[3][l];
+                            dist->incoord[counter]->coord[4]=readin[4][m];
+                            dist->incoord[counter]->coord[5]=readin[5][n];
+                            //dist->coord[5]->values[n];
+                         	counter++;
+                        
+                                                        
+                        }
+                    }
+                }
+            }
+        }   
+    }
+    dist->totincoord=counter;
+    dist->isDistrcalculated=1;
+}
+
 
 /*If emittance is defined it converts to canonical coordinates */
 void action2normalized(double acangl[6], double normalized[6]){
@@ -67,6 +124,7 @@ void action2normalized(double acangl[6], double normalized[6]){
 }
 
 void normalized2canonical(double normalized[6], double cancoord[6]){
+	printf("emiittance %f %f", dist->emitt->e1, dist->emitt->e2);
     normalized[0] = sqrt(dist->emitt->e1)*normalized[0];
     normalized[1] = sqrt(dist->emitt->e1)*normalized[1];
     normalized[2] = sqrt(dist->emitt->e2)*normalized[2];
@@ -126,74 +184,106 @@ int particle_within_limits_normalized(double *normalized){
     }
     return 1;
 }
-/*
+
 void createcoordinates(int index,  double start, double stop, int length, int type){
-
-    dist->coord[index-1]->start = start;
-    dist->coord[index-1]->stop = stop;
-    dist->coord[index-1]->length = length;
-    dist->coord[index-1]->type = type;
-//  dist->coord[index-1]->coordtype = coordtype;
-    
-
-    if(type ==0){ //Constant value 
-        dist->coord[index-1]->values = (double)malloc((length)sizeof(double));
-        dist->coord[index-1]->values[0] = start;
-        dist->coord[index-1]->length = 1; //if it is a constant the length should always be 1.
+	printf("index, start, stop, length, type  %d %f %f %d %d", index, start, stop, length, type  );
+	double temp [length];
+    if(type ==0){ //Constant value
+    	for(int i=0;i <length; i++){
+        	dist->incoord[i]->coord[index] = start;
+    	}
+    return;
     }
+   
 
-    if(type > 0){ //Allocate space for the array
-        if(dist->disttype==1){
-            if(dist->totallength>0){
-                int tmp;
-                tmp=dist->totallength;
-                length=&tmp;
-                }
-            else
-                printf("You need to set a totallength for disttype 1!");
-        }
-        dist->coord[index-1]->values = (double)malloc((length)*sizeof(double));
-     //   memcpy(dist->coord[index-1]->values , start, sizeof(double));   //not sure 
+    else if(type==1){ //Linearly spaced intervalls
+		createLinearSpaced(length, start, stop, temp);     
     }
-    if(type==1){ //Linearly spaced intervalls
-    
-        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
-    }
-    if(type==2){ //Exponentially spaced
-        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+    else if(type==2){ //Exponentially spaced
+    	createLinearSpaced(length, start, stop, temp);
         for(int i=0;i <length; i++){
-               
-            dist->coord[index-1]->values[i] = exp(dist->coord[index-1]->values[i]);
+            dist->incoord[i]->coord[index] = exp(temp[i]);
         }
     }
-    if(type==3){ //Spaced with  ^2
-        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+    else if(type==3){ //Spaced with  ^2
+    	createLinearSpaced(length, start, stop, temp);
         for(int i=0;i <length; i++){
-            dist->coord[index-1]->values[i] = pow(dist->coord[index-1]->values[i],2);
+            dist->incoord[i]->coord[index] = pow(temp[i],2);
         
         }
 
     }
-    if(type==4){ // uniform random 
-        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+    else if(type==4){ // uniform random 
         for(int i=0;i <length; i++){
-            dist->coord[index-1]->values[i] = rand_uni(start, stop);
+            dist->incoord[i]->coord[index] = rand_uni(start, stop);
             //printf("%f \n", dist->coord[index-1]->values[i] );
         }
     }
 
-    if(type==5){ // Gaussian random (Here start is mean and stop is the standard deviation)
-        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+    else if(type==5){ // Gaussian random (Here start is mean and stop is the standard deviation)
         for(int i=0;i <length; i++){
-            dist->coord[index-1]->values[i] = randn(start, stop);
+            dist->incoord[i]->coord[index] = randn(start, stop);
         }
     }
 
-    if(type==6){ // Rayleigh distribution
-        createLinearSpaced(length, start, stop,dist->coord[index-1]->values);
+    else if(type==6){ // Rayleigh distribution
         for(int i=0;i <length; i++){
-            dist->coord[index-1]->values[i] = randray(start, stop);
+            dist->incoord[i]->coord[index] = randray(start, stop);
+            printf("rayyy %f \n",  dist->incoord[i]->coord[index]);
 
         }
     }
-}*/
+    else
+    	issue_error("Unknown type of spacing");
+}
+
+
+void createLinearSpaced(int length, double start, double stop, double *eqspaced ){
+    
+    double distance = (stop-start)/length;
+    for(int i=0; i<length; i++){
+        eqspaced[i] = start+distance*i;
+    }
+    
+}
+
+double randn(double mu, double sigma)
+{
+  double U1, U2, W, mult;
+  static double X1, X2;
+  static int call = 0;
+ 
+  if (call == 1)
+    {
+      call = !call;
+      return (mu + sigma * (double) X2);
+    }
+ 
+  do
+    {
+      U1 = -1 + ((double) rand () / RAND_MAX) * 2;
+      U2 = -1 + ((double) rand () / RAND_MAX) * 2;
+      W = pow (U1, 2) + pow (U2, 2);
+    }
+  while (W >= 1 || W == 0);
+ 
+  mult = sqrt ((-2 * log (W)) / W);
+  X1 = U1 * mult;
+  X2 = U2 * mult;
+ 
+  call = !call;
+ 
+  return (mu + sigma * (double) X1);
+}
+
+double rand_uni(double low, double high)
+{
+
+  return ( (double)rand() * ( high - low ) ) / (double)RAND_MAX + low;
+}
+
+double randray(double mu, double sigma){
+  double low = 0;
+  double high =1;
+  return pow((mu+sigma*sqrt((-2*log(rand_uni(low, high))))),2);
+}
