@@ -267,11 +267,11 @@ void deallocateincoord(){
 
   for(int i=0; i<dist->totincoord; i++){
 
-    free(dist->incoord[i]->coord);
-    free(dist->incoord[i]->readin);
-    free(dist->incoord[i]);
-    free(dist->outcoord[i]->coord);
-    free(dist->outcoord[i]); 
+   // free(dist->incoord[i]->coord);
+   // free(dist->incoord[i]->readin);
+  //  free(dist->incoord[i]);
+  //  free(dist->outcoord[i]->coord);
+//    free(dist->outcoord[i]); 
 
   }
 

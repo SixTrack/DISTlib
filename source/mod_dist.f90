@@ -100,7 +100,7 @@ subroutine dist_setscan_para_diagonal(variable, variable_type, space_type, start
 end subroutine dist_setscan_para_diagonal
 
 subroutine dist_setscan_para_grid(variable, variable_type, space_type, start_value, stop_value, length) &
-bind(C, name="setscan_para_diagonal")
+bind(C, name="setscan_para_grid")
   use, intrinsic :: iso_c_binding
   integer(kind=C_INT), value, intent(in) :: variable, variable_type, space_type, length
   real(kind=C_DOUBLE), value, intent(in) :: start_value, stop_value

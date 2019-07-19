@@ -36,7 +36,7 @@ program demodist
 
       e1 = 1.0d0
       e2 = 2.0d0
-      e3 = 0.03d0
+      e3 = 0.0d0
       dp = 0.000001d0
       pia2 = 2.00d0*3.1415
       zero = 0.0d0
@@ -67,19 +67,24 @@ program demodist
       call dist_settasmatrix(tas)
 
       call dist_sete0andmass0(energy0, mass0 )
-      call dist_settotalsteps(npart)
-      call dist_setscan_para_diagonal(0,0,6,zero,one);
-      call dist_setscan_para_diagonal(1,0,4,zero,pia2);
-      call dist_setscan_para_diagonal(2,0,6,zero,one);
-      call dist_setscan_para_diagonal(3,0,4,zero,pia2);
-      call dist_setscan_para_diagonal(4,0,6,zero,one);
-      call dist_setscan_para_diagonal(5,0,4,zero,pia2);
+      !call dist_settotalsteps(npart)
+      !call dist_setscan_para_diagonal(0,0,6,zero,one);
+      !call dist_setscan_para_diagonal(1,0,4,zero,pia2);
+      !call dist_setscan_para_diagonal(2,0,6,zero,one);
+      !call dist_setscan_para_diagonal(3,0,4,zero,pia2);
+      !call dist_setscan_para_diagonal(4,0,6,zero,one);
+      !call dist_setscan_para_diagonal(5,0,4,zero,pia2);
 
-
+      call dist_setscan_para_grid(0,0,6,zero,one,2);
+      call dist_setscan_para_grid(1,0,4,zero,pia2,2);
+      call dist_setscan_para_grid(2,0,6,zero,one,3);
+      call dist_setscan_para_grid(3,0,4,zero,pia2,3);
+      call dist_setscan_para_grid(4,0,6,zero,one,3);
+      call dist_setscan_para_grid(5,0,4,zero,pia2,30);
       
       call dist_get6trackcoord(x,xp,y,yp,sigma,deltap, npart)
    
-      do i=1, 50
+      do i=1, npart
       print *, x(i),xp(i),y(i),yp(i),sigma(i),deltap(i) 
       enddo
 

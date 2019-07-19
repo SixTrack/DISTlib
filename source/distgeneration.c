@@ -16,7 +16,7 @@ void gensixcanonical(){
     double tc[dim];
     double normalized[dim], cancoord[dim];
     if(dist->ref->grid==1){
-    	//generate a grid
+    	generate_grid();//generate a grid
     }
 
     for(int i =0; i< dist->totincoord; i++){
@@ -68,7 +68,8 @@ int gettotalgridlength(){
 	dist->totincoord=totlength;
 	return totlength;
 }
-void dist2sixcoord_(){
+void generate_grid(){
+	printf("generatiiing griiiiiiiiiiiiiiiiiiiiid \n");
     int counter = 0;
     double tc[6];
     double tmp[6];
@@ -76,11 +77,14 @@ void dist2sixcoord_(){
     double **readin;
     int totallenght = gettotalgridlength();
     readin = (double**)malloc(dim*sizeof(double*));
+    	printf("before for griiiiiiiiiiiiiiiiiiiiid \n");
     for(int i=0; i<dim; i++){
     	readin[i] = (double*)malloc(dist->ref->readinlength[i]*sizeof(double));
     	memcpy(readin[i],dist->incoord[i]->coord, dist->ref->readinlength[i]*sizeof(double));
     }
+        	printf("after for griiiiiiiiiiiiiiiiiiiiid \n");
     deallocateincoord();
+            	printf("adealloc iiiiiiiiiiiiid \n");
     allocateincoord(totallenght);
 
     //dist->distout_normalized = (double**)malloc(getupperbound()*sizeof(double*));
@@ -124,7 +128,7 @@ void action2normalized(double acangl[6], double normalized[6]){
 }
 
 void normalized2canonical(double normalized[6], double cancoord[6]){
-	printf("emiittance %f %f", dist->emitt->e1, dist->emitt->e2);
+
     normalized[0] = sqrt(dist->emitt->e1)*normalized[0];
     normalized[1] = sqrt(dist->emitt->e1)*normalized[1];
     normalized[2] = sqrt(dist->emitt->e2)*normalized[2];
@@ -229,8 +233,6 @@ void createcoordinates(int index,  double start, double stop, int length, int ty
     else if(type==6){ // Rayleigh distribution
         for(int i=0;i <length; i++){
             dist->incoord[i]->coord[index] = randray(start, stop);
-            printf("rayyy %f \n",  dist->incoord[i]->coord[index]);
-
         }
     }
     else
@@ -244,7 +246,6 @@ void createLinearSpaced(int length, double start, double stop, double *eqspaced 
     for(int i=0; i<length; i++){
         eqspaced[i] = start+distance*i;
     }
-    
 }
 
 double randn(double mu, double sigma)

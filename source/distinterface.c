@@ -40,6 +40,7 @@ void initializedistribution(int numberOfDist){
         (dist + i)->ref->ang_like=-1;
         (dist + i)->totincoord=-1;
         (dist + i)->ref->typeused = (int*)malloc(dim*sizeof(int));
+        (dist + i)->ref->readinlength = (int*)malloc(dim*sizeof(int));
         for(int k=0; k<dim;k++){
             (dist + i)->tas[k] =(double*)malloc(dim*sizeof(double));
             (dist + i)->invtas[k] =(double*)malloc(dim*sizeof(double));
@@ -119,15 +120,13 @@ void setscan_para_diagonal(int variable, int variable_type, int type, double sta
         allocateincoord(dist->totincoord);
     }
     dist->ref->typeused[variable] =  variable_type;
-    dist->incoordtype=variable_type;
-    printf("befoooreee creatinnnnggg \n");
+    dist->incoordtype=variable_type; // this is wrong
+
     createcoordinates(variable, start, stop, dist->totincoord,type);
-    printf("affferere creatinnnnggg \n");
 }
 
 void setscan_para_grid(int variable,int variable_type,int type, double start, double stop, int length){
     dist->ref->readinlength[variable] = length;
-
 
     if(length>MAX_LENGTH)
         issue_error("For grid scans you have requested to many particles.");
@@ -135,6 +134,7 @@ void setscan_para_grid(int variable,int variable_type,int type, double start, do
         allocateincoord(MAX_LENGTH);
 
     dist->ref->typeused[variable] =  variable_type;
+    dist->incoordtype=variable_type;
     createcoordinates(variable, start, stop, dist->totincoord,type);
     dist->ref->grid=1;
 

@@ -89,3 +89,4 @@ void createLinearSpaced(int length, double start, double stop, double *eqspaced 
 double randray(double mu, double sigma);
 void createcoordinates(int index,  double start, double stop, int length, int type);
 int gettotalgridlength();
+void generate_grid();
