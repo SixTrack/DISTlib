@@ -8,7 +8,7 @@
 #include "outputdist.h"
 #include "file_reader.h"
 #include "distgeneration.h"
-#include "round_near.c"
+//#include "round_near.c"
 
 
 int readfile(const char*  filename){
@@ -57,7 +57,7 @@ int readfile(const char*  filename){
           strcpy(parameter, parameter_tmp);
         }       
         
-        value = strtod_cr(value_s,NULL);
+        value = strtod(value_s,NULL);
 
         if(strcmp(parameter, "energy0")==0){
           multifactor = getEnergyUnit(unit);

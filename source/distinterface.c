@@ -41,6 +41,7 @@ void initializedistribution(int numberOfDist){
         (dist + i)->totincoord=-1;
         (dist + i)->ref->typeused = (int*)malloc(dim*sizeof(int));
         (dist + i)->ref->readinlength = (int*)malloc(dim*sizeof(int));
+        (dist + i)->ref->grid=-1;
         for(int k=0; k<dim;k++){
             (dist + i)->tas[k] =(double*)malloc(dim*sizeof(double));
             (dist + i)->invtas[k] =(double*)malloc(dim*sizeof(double));
@@ -89,6 +90,12 @@ void settasmatrix(double *tas){
 			dist->tas[i][j] = tas[j+i*dim];
 		}
 	}
+}
+void settasmatrix_element(double value, int row, int column){
+
+            dist->tas[row][column] = value;
+        
+    
 }
 
 // 0 -action angle, 1- normalized coordinates, 2-physical, 3-mixed
@@ -183,7 +190,9 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
         nparticles = *totparticles;
 
     for(int i=0; i < nparticles; i++){
+        printf("heeree %f, \n", dist->incoord[i]->mass);
         canonical2six(dist->outcoord[i]->coord, dist->ref->beta0, dist->ref->pc0, dist->ref->mass0, dist->incoord[i]->mass, tmp);
+        printf("tmpppp %f \n",tmp[0]);
         x[i]  = tmp[0];
         xp[i] = tmp[1];
         y[i]  = tmp[2];

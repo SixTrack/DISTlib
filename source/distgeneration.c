@@ -27,14 +27,13 @@ void gensixcanonical(){
     	
 
         if(type==0 || type==3){
+            printf("tccccc %f \n", tc[0] );
         	action2normalized(tc, normalized);
-
         	normalized2canonical(normalized, cancoord);
-        	printf("tcccccc %f \n", cancoord[0]);
         }
         else if(type==1){
 	        for(int k=0; k<6; k++){
-	    		normalized[k] = tc[k];
+	    		//normalized[k] = tc[k];
 	        	normalized2canonical(tc, cancoord);
 	    	}
 	    }
@@ -49,15 +48,18 @@ void gensixcanonical(){
         if(particle_within_limits_physical(cancoord)==1 && particle_within_limits_normalized(normalized)){
             for(int p=0; p<dim; p++){
                 dist->outcoord[counter]->coord[p]   = cancoord[p];
+            printf("cooord %f \n", dist->outcoord[i]->coord[p]);
             }
             dist->outcoord[i]->mass  = dist->incoord[i]->mass;
             dist->outcoord[i]->a     = dist->incoord[i]->a;
             dist->outcoord[i]->z     = dist->incoord[i]->z;
             counter++;
+       
         }
     }
     dist->totoutcoord=counter;
     dist->isDistrcalculated=1;
+     printf("outtt %f \n", 2);
 
 }
 int gettotalgridlength(){
@@ -118,7 +120,7 @@ void generate_grid(){
 
 /*If emittance is defined it converts to canonical coordinates */
 void action2normalized(double acangl[6], double normalized[6]){
-    
+
     normalized[0]= sqrt(acangl[0]/2)*cos(acangl[1]);
     normalized[1]=-sqrt(acangl[0]/2)*sin(acangl[1]);
     normalized[2]= sqrt(acangl[2]/2)*cos(acangl[3]);
@@ -136,7 +138,7 @@ void normalized2canonical(double normalized[6], double cancoord[6]){
     normalized[4] = sqrt(dist->emitt->e3)*normalized[4];
     normalized[5] = sqrt(dist->emitt->e3)*normalized[5];
 
-   
+       
     if(dist->incoordtype==3) {
         double lindp = 0;
         double lindeltas=0;
