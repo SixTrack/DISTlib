@@ -59,7 +59,6 @@ void gensixcanonical(){
     }
     dist->totoutcoord=counter;
     dist->isDistrcalculated=1;
-     printf("outtt %f \n", 2);
 
 }
 int gettotalgridlength(){
@@ -192,7 +191,6 @@ int particle_within_limits_normalized(double *normalized){
 }
 
 void createcoordinates(int index,  double start, double stop, int length, int type){
-	printf("index, start, stop, length, type  %d %f %f %d %d", index, start, stop, length, type  );
 	double temp [length];
     if(type ==0){ //Constant value
     	for(int i=0;i <length; i++){

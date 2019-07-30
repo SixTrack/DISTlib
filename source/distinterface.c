@@ -123,7 +123,6 @@ void setscan_para_diagonal(int variable, int variable_type, int type, double sta
         issue_error("Must set a total steps before you can set a parameter");
 
     if(dist->isallocated!=1){
-        printf("alllocating %d \n", dist->totincoord);
         allocateincoord(dist->totincoord);
     }
     dist->ref->typeused[variable] =  variable_type;

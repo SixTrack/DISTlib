@@ -36,8 +36,8 @@ program demodist
 
       e1 = 1.0d0
       e2 = 2.0d0
-      e3 = 0.0d0
-      dp = 0.000001d0
+      e3 = 0.1d0
+      dp = 0.1d0
       pia2 = 2.00d0*3.1415
       zero = 0.0d0
       energy0 =200
@@ -45,18 +45,20 @@ program demodist
       one =1d0
       six = 6.000d0
       closed(1)=10
-      npart = 1000000
+
+      npart =1000
       do i=1, npart
       xn(i) = dp*i
       pxn(i) = dp*i
       yn(i) = dp*i*dp
       pyn(i) = dp*i
-      zn(i) = dp*i*dp
-      zpn(i) = dp*i+0.0001
+      zn(i) = 0.2
+      zpn(i) = 0.1
       enddo
       
 
-      npart =1000
+
+
       ! Initialize 3 distributions with dimenstion 6
 
       call dist_initializedistribution(3)
@@ -76,13 +78,13 @@ program demodist
       !call dist_setscan_para_diagonal(4,0,6,zero,one);
       !call dist_setscan_para_diagonal(5,0,4,zero,pia2);
 
-      call dist_setscan_para_grid(0,0,6,zero,one,2);
-      call dist_setscan_para_grid(1,0,4,zero,pia2,2);
-      call dist_setscan_para_grid(2,0,6,zero,one,3);
-      call dist_setscan_para_grid(3,0,4,zero,pia2,3);
-      call dist_setscan_para_grid(4,0,6,zero,one,3);
-      call dist_setscan_para_grid(5,0,4,zero,pia2,30);
-      
+     ! call dist_setscan_para_grid(0,0,6,zero,one,2);
+     ! call dist_setscan_para_grid(1,0,4,zero,pia2,2);
+     ! call dist_setscan_para_grid(2,0,6,zero,one,3);
+     ! call dist_setscan_para_grid(3,0,4,zero,pia2,3);
+     ! call dist_setscan_para_grid(4,0,6,zero,one,3);
+     ! call dist_setscan_para_grid(5,0,4,zero,pia2,30);
+      call dist_setcooords(xn,pxn,y,yn,zn,zpn, npart, 1)
       call dist_get6trackcoord(x,xp,y,yp,sigma,deltap, npart)
    
       do i=1, npart
