@@ -18,23 +18,26 @@ class DISTlib:
 	def setscan_para_diagonal(self,variable, variable_type, space_type, start_value, stop_value):
 		self.dist.setscan_para_diagonal(c_int(variable), c_int(variable_type), c_int(space_type), c_double(start_value), c_double(stop_value))
 
-	def sete0andmass0(self,energy0, mass0):
-		self.dist.sete0andmass0d(c_double(energy0),c_double(mass0))
 	def settotalsteps(self, totalsetps):
 		self.dist.settotalsteps(c_int(totalsetps))
 
+	def setEandMass(self,energy0, mass0):
+		self.dist.sete0andmass0(c_double(energy0),c_double(mass0))
 
 	def  get6trackcoord(self):
-		npart = byref(c_int(6))#self.dist.getarraylength()
-		double6 = c_double * 8
-		physical = double6(0,0,0,0,0,0)
-		print("npppart", npart)
-		x1 =  double6(0,0,0,0,0,0)
-		x2 =  double6(0,0,0,0,0,0)
-		x3 =  double6(0,0,0,0,0,0)
-		x4 =  double6(0,0,0,0,0,0)
-		x5 =  double6(0,0,0,0,0,0)
-		x6 =  double6(0,0,0,0,0,0)
+		totlength = c_int(0)
+		npart=pointer(totlength)
+
+		self.dist.getarraylength(npart)
+		print(npart.contents.value)
+
+		double6 = c_double * npart.contents.value
+		x1 =  double6(0)
+		x2 =  double6(0)
+		x3 =  double6(0)
+		x4 =  double6(0)
+		x5 =  double6(0)
+		x6 =  double6(0)
 		xd = []
 		pxd = []
 		yd = []
@@ -42,7 +45,7 @@ class DISTlib:
 		deltas = []
 		dp = []
 		self.dist.get6trackcoord(x1,x2,x3,x4,x5,x6, npart)
-		for i in range(0,5):
+		for i in range(0,npart.contents.value):
 			xd.append(x1[i])
 			pxd.append(x2[i])
 			yd.append(x3[i])

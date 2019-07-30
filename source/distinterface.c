@@ -67,8 +67,8 @@ void initializedistribution(int numberOfDist){
 void sete0andmass0(double energy0, double mass0){
 	dist->ref->mass0 = mass0;
 	dist->ref->e0 = energy0;
-    dist->ref->pc0 = energy2momentum(dist->ref->e0,dist->ref->mass0);
-    dist->ref->beta0 = (dist->ref->pc0)/(dist->ref->e0);
+   //dist->ref->pc0 = energy2momentum(dist->ref->e0,dist->ref->mass0);
+   //dist->ref->beta0 = (dist->ref->pc0)/(dist->ref->e0);
 }
 
 void setdistribution(int ndist){
@@ -103,14 +103,14 @@ void setcoords(double *xn, double *xpn, double *yn, double *ypn, double *zn, dou
 	allocateincoord(totparticles);
 	for(int i=0; i<totparticles; i++){
 		dist->incoord[i]->coord[0] = xn[i];
-		dist->incoord[i]->coord[1] = xpn[i]; 
+		dist->incoord[i]->coord[1] = xpn[i];
 		dist->incoord[i]->coord[2] = yn[i];
 		dist->incoord[i]->coord[3] = ypn[i];
 		dist->incoord[i]->coord[4] = zn[i];
 		dist->incoord[i]->coord[5] = zpn[i]; 
     }
 
-	dist->totincoord  =totparticles;
+	dist->totincoord  = totparticles;
 	dist->incoordtype = coordtype;
 }
 
@@ -190,9 +190,7 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
         nparticles = *totparticles;
 
     for(int i=0; i < nparticles; i++){
-        printf("heeree %f, \n", dist->incoord[i]->mass);
         canonical2six(dist->outcoord[i]->coord, dist->ref->beta0, dist->ref->pc0, dist->ref->mass0, dist->incoord[i]->mass, tmp);
-        printf("tmpppp %f \n",tmp[0]);
         x[i]  = tmp[0];
         xp[i] = tmp[1];
         y[i]  = tmp[2];

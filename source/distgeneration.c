@@ -27,7 +27,7 @@ void gensixcanonical(){
     	
 
         if(type==0 || type==3){
-            printf("tccccc %f \n", tc[0] );
+
         	action2normalized(tc, normalized);
         	normalized2canonical(normalized, cancoord);
         }
@@ -48,7 +48,7 @@ void gensixcanonical(){
         if(particle_within_limits_physical(cancoord)==1 && particle_within_limits_normalized(normalized)){
             for(int p=0; p<dim; p++){
                 dist->outcoord[counter]->coord[p]   = cancoord[p];
-            printf("cooord %f \n", dist->outcoord[i]->coord[p]);
+
             }
             dist->outcoord[i]->mass  = dist->incoord[i]->mass;
             dist->outcoord[i]->a     = dist->incoord[i]->a;
@@ -71,7 +71,7 @@ int gettotalgridlength(){
 	return totlength;
 }
 void generate_grid(){
-	printf("generatiiing griiiiiiiiiiiiiiiiiiiiid \n");
+
     int counter = 0;
     double tc[6];
     double tmp[6];
@@ -79,14 +79,14 @@ void generate_grid(){
     double **readin;
     int totallenght = gettotalgridlength();
     readin = (double**)malloc(dim*sizeof(double*));
-    	printf("before for griiiiiiiiiiiiiiiiiiiiid \n");
+
     for(int i=0; i<dim; i++){
     	readin[i] = (double*)malloc(dist->ref->readinlength[i]*sizeof(double));
     	memcpy(readin[i],dist->incoord[i]->coord, dist->ref->readinlength[i]*sizeof(double));
     }
-        	printf("after for griiiiiiiiiiiiiiiiiiiiid \n");
+
     deallocateincoord();
-            	printf("adealloc iiiiiiiiiiiiid \n");
+
     allocateincoord(totallenght);
 
     //dist->distout_normalized = (double**)malloc(getupperbound()*sizeof(double*));
@@ -203,7 +203,10 @@ void createcoordinates(int index,  double start, double stop, int length, int ty
    
 
     else if(type==1){ //Linearly spaced intervalls
-		createLinearSpaced(length, start, stop, temp);     
+		createLinearSpaced(length, start, stop, temp);
+        for(int i=0;i <length; i++){
+            dist->incoord[i]->coord[index] = exp(temp[i]);
+        }     
     }
     else if(type==2){ //Exponentially spaced
     	createLinearSpaced(length, start, stop, temp);

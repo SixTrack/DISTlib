@@ -59,14 +59,15 @@ program demodist
       npart =1000
       ! Initialize 3 distributions with dimenstion 6
 
-    call dist_initializedistribution(3)
+      call dist_initializedistribution(3)
     ! Set the tas matrix 
          
       call dist_setemitt12(e1,e2)
       call dist_setemitt3(e3)
       call dist_settasmatrix(tas)
 
-      call dist_sete0andmass0(energy0, mass0 )
+      call dist_sete0andmass0(energy0, mass0)
+      
       !call dist_settotalsteps(npart)
       !call dist_setscan_para_diagonal(0,0,6,zero,one);
       !call dist_setscan_para_diagonal(1,0,4,zero,pia2);
