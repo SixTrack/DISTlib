@@ -67,8 +67,8 @@ void initializedistribution(int numberOfDist){
 void sete0andmass0(double energy0, double mass0){
 	dist->ref->mass0 = mass0;
 	dist->ref->e0 = energy0;
-   //dist->ref->pc0 = energy2momentum(dist->ref->e0,dist->ref->mass0);
-   //dist->ref->beta0 = (dist->ref->pc0)/(dist->ref->e0);
+    dist->ref->pc0 = energy2momentum(dist->ref->e0,dist->ref->mass0);
+    dist->ref->beta0 = (dist->ref->pc0)/(dist->ref->e0);
 }
 
 void setdistribution(int ndist){

@@ -128,14 +128,14 @@ void action2normalized(double acangl[6], double normalized[6]){
     normalized[5]=-sqrt(acangl[4]/2)*sin(acangl[5]); // used to devide with 1000 here before.. 
 }
 
-void normalized2canonical(double normalized[6], double cancoord[6]){
-
-    normalized[0] = sqrt(dist->emitt->e1)*normalized[0];
-    normalized[1] = sqrt(dist->emitt->e1)*normalized[1];
-    normalized[2] = sqrt(dist->emitt->e2)*normalized[2];
-    normalized[3] = sqrt(dist->emitt->e2)*normalized[3];
-    normalized[4] = sqrt(dist->emitt->e3)*normalized[4];
-    normalized[5] = sqrt(dist->emitt->e3)*normalized[5];
+void normalized2canonical(double normalized_in[6], double cancoord[6]){
+    double normalized[6];
+    normalized[0] = sqrt(dist->emitt->e1)*normalized_in[0];
+    normalized[1] = sqrt(dist->emitt->e1)*normalized_in[1];
+    normalized[2] = sqrt(dist->emitt->e2)*normalized_in[2];
+    normalized[3] = sqrt(dist->emitt->e2)*normalized_in[3];
+    normalized[4] = sqrt(dist->emitt->e3)*normalized_in[4];
+    normalized[5] = sqrt(dist->emitt->e3)*normalized_in[5];
 
        
     if(dist->incoordtype==3) {

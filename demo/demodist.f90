@@ -36,8 +36,8 @@ program demodist
 
       e1 = 1.0d0
       e2 = 2.0d0
-      e3 = 0.1d0
-      dp = 0.1d0
+      e3 = 0.0d0
+      dp = 0.000001d0
       pia2 = 2.00d0*3.1415
       zero = 0.0d0
       energy0 =200
@@ -45,23 +45,22 @@ program demodist
       one =1d0
       six = 6.000d0
       closed(1)=10
-
-      npart =1000
+      npart = 1000000
       do i=1, npart
       xn(i) = dp*i
       pxn(i) = dp*i
       yn(i) = dp*i*dp
       pyn(i) = dp*i
-      zn(i) = 0.2
-      zpn(i) = 0.1
+      zn(i) = dp*i*dp
+      zpn(i) = dp
       enddo
       
 
-
+      npart =1000
 
       ! Initialize 3 distributions with dimenstion 6
 
-      call dist_initializedistribution(3)
+      call dist_initializedistribution(1)
     ! Set the tas matrix 
          
       call dist_setemitt12(e1,e2)
@@ -84,7 +83,7 @@ program demodist
      ! call dist_setscan_para_grid(3,0,4,zero,pia2,3);
      ! call dist_setscan_para_grid(4,0,6,zero,one,3);
      ! call dist_setscan_para_grid(5,0,4,zero,pia2,30);
-      call dist_setcooords(xn,pxn,y,yn,zn,zpn, npart, 1)
+      call dist_setcooords(xn,pxn,yn,pyn,zn,zpn, npart, 1)
       call dist_get6trackcoord(x,xp,y,yp,sigma,deltap, npart)
    
       do i=1, npart

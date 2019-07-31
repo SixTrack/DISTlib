@@ -184,7 +184,6 @@ void convert2standard(){
 	for(int i=0; i<dist->totincoord; i++){
   		for(int j=0; j<6; j++){
   			dist->incoord[i]->coord[j]= dist->incoord[i]->readin[j]; // have to have checks here..! 
-  			printf("theesees variables %f", dist->incoord[i]->coord[j]);
   		}
   	}
   
