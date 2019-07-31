@@ -59,6 +59,15 @@ void initializedistribution(int numberOfDist){
             (dist +i)->coord[j]->type=0;
             (dist +i)->closedorbit[j]=0;
         }
+        for (int i = 0; i < 6; i++)
+        {
+            for (int k = 0; k < 6; k++)
+            {
+                dist->tas [i][k] = 0;
+                dist->invtas[i][k] = 0;
+                
+            }
+        }
     }
     diststart=dist;
 
@@ -95,8 +104,31 @@ void settasmatrix_element(double value, int row, int column){
 
             dist->tas[row][column] = value;
         
-    
 }
+/*Create a TAS matrix using E-T, assuming uncoupled system */
+void settwisstas(double betax, double alfax, double betay, double alfay){
+
+    dist->tas[0][0] = sqrt(betax);
+    dist->tas[1][0] =-(alfax)/sqrt(betax);
+    dist->tas[1][1] =-1/sqrt(betax);
+    dist->tas[2][2] = sqrt(betay);
+    dist->tas[3][2] =-alfay/sqrt(betay);
+    dist->tas[3][3] =-1/sqrt(betay);
+
+    dist->tas[5][5] =1; // This is not a matched longitudinal but enables to change the energy 
+    dist->tas[4][4] =1;
+
+}
+
+void setdisptas(double dx, double dpx, double dy, double dpy){
+    
+    dist->tas[0][5] = dx;
+    dist->tas[1][5] = dpx;
+    dist->tas[2][5] = dy;
+    dist->tas[3][5] = dpy;
+
+}
+
 
 // 0 -action angle, 1- normalized coordinates, 2-physical, 3-mixed
 void setcoords(double *xn, double *xpn, double *yn, double *ypn, double *zn, double *zpn, int totparticles, int coordtype){

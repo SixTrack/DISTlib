@@ -106,6 +106,20 @@ bind(C, name="setscan_para_grid")
   real(kind=C_DOUBLE), value, intent(in) :: start_value, stop_value
 end subroutine dist_setscan_para_grid
 
+subroutine dist_settwisstas(betx, alfx, bety, alfy) &
+bind(C, name="settwisstas")
+  use, intrinsic :: iso_c_binding
+  real(kind=C_DOUBLE), value, intent(in) :: betx, alfx, bety, alfy
+end subroutine dist_settwisstas
+
+subroutine dist_setdisptas(dx, dpx, dy, dpy) &
+bind(C, name="setdisptas")
+  use, intrinsic :: iso_c_binding
+  real(kind=C_DOUBLE), value, intent(in) :: dx, dpx, dy, dpy
+end subroutine dist_setdisptas
+
+
+
 
 end interface 
 end module
