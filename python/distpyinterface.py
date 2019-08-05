@@ -54,6 +54,38 @@ class DISTlib:
 			dp.append(x6[i])
 		return [xd, pxd, yd, yxd, deltas, dp]
 
+
+	def gettasunitcoord(self):
+		totlength = c_int(0)
+		npart=pointer(totlength)
+
+		self.dist.getarraylength(npart)
+		print(npart.contents.value)
+
+		double6 = c_double * npart.contents.value
+		x1 =  double6(0)
+		x2 =  double6(0)
+		x3 =  double6(0)
+		x4 =  double6(0)
+		x5 =  double6(0)
+		x6 =  double6(0)
+		xd = []
+		pxd = []
+		yd = []
+		yxd = []
+		deltas = []
+		dp = []
+		self.dist.getunconvertedcoord(x1,x2,x3,x4,x5,x6, npart)
+		for i in range(0,npart.contents.value):
+			xd.append(x1[i])
+			pxd.append(x2[i])
+			yd.append(x3[i])
+			yxd.append(x4[i])
+			deltas.append(x5[i])
+			dp.append(x6[i])
+		return [xd, pxd, yd, yxd, deltas, dp]
+
+
 	def settasmatrix(self,  tas):
 		for i in range(0,6):
 			for j in range(0,6):
