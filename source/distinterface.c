@@ -232,6 +232,29 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
     *totparticles=nparticles;
 }
 
+void getunconvertedcoord(double *x, double *xp, double *y, double *yp, double *sigma, double *deltap, int *totparticles){
+    double tmp[6];
+    int nparticles;
+    if(dist->isDistrcalculated ==0){
+        gensixcanonical();
+
+    }
+    if(dist->totoutcoord < *totparticles)
+        nparticles = dist->totoutcoord;
+    else
+        nparticles = *totparticles;
+
+    for(int i=0; i < nparticles; i++){
+        x[i]  = dist->outcoord[i]->coord[0];
+        xp[i] = dist->outcoord[i]->coord[1];
+        y[i]  = dist->outcoord[i]->coord[2];
+        yp[i] = dist->outcoord[i]->coord[3];
+        sigma[i]  = dist->outcoord[i]->coord[4];
+        deltap[i] = dist->outcoord[i]->coord[5];
+   }
+    *totparticles=nparticles;
+}
+
 
 void getrefpara(double *energy0, double *mass0, int *a0, int *z0){
     *energy0=dist->ref->e0;

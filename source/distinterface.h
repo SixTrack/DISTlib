@@ -25,3 +25,4 @@ void setscan_para_diagonal(int variable, int variable_type, int type, double sta
 void setscan_para_grid(int variable,int variable_type,int type, double start, double stop, int length);
 void setdisptas(double dx, double dpx, double dy, double dpy);
 void settwisstas(double betax, double alfax, double betay, double alfay);
+void getunconvertedcoord(double *x, double *xp, double *y, double *yp, double *sigma, double *deltap, int *totparticles);
