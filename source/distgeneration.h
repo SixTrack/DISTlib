@@ -64,8 +64,10 @@ struct emittances{
 struct appliedcut{
 	int isset_p;
 	int isset_n;
+	int isset_a;
 	struct cut** physical;
 	struct cut** normalized;
+	struct cut** action;
 };
 
 //void canonical2emittance_(double cancord[6], double emittance[3]);
@@ -77,6 +79,7 @@ struct appliedcut{
 void gensixcanonical();
 int particle_within_limits_physical(double *physical);
 int particle_within_limits_normalized(double *normalized);
+int particle_with_limits_action(int i, double value);
 void generatefromnormalized();
 void generatefrommixed();
 void generatefromaction();

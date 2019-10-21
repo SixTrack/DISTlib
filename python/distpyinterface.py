@@ -91,5 +91,9 @@ class DISTlib:
 			for j in range(0,6):
 				self.dist.settasmatrix_element(c_double(tas[i][j]), c_int(i), c_int(j))
 
+
+	def set_action_angle_cuts(self,variable, min_v, max_v):
+		self.dist.setactionanglecut(c_int(variable), c_double(min_v), c_double(max_v))
+
 			#def createtas0coupling(dist, betx, alfx, bety, alfy, dx, dpx, dy, dpy):
 #	dist.createtas0coupling_(c_double(betx),c_double(alfx),c_double(bety),c_double(alfy), c_double(0), c_double(0), c_double(0), c_double(0))

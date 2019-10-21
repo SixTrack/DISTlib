@@ -25,6 +25,7 @@ void initializedistribution(int numberOfDist){
         (dist + i)->cuts2apply = (struct appliedcut*)malloc(sizeof(struct appliedcut));
         (dist + i)->cuts2apply->physical = (struct cut**)malloc(dim*sizeof(struct cut*));
         (dist + i)->cuts2apply->normalized = (struct cut**)malloc(dim*sizeof(struct cut*));
+        (dist + i)->cuts2apply->action = (struct cut**)malloc(dim*sizeof(struct cut*));
         (dist + i)->tas   = (double**)malloc(dim*sizeof(double*));
         (dist + i)->invtas   = (double**)malloc(dim*sizeof(double*));
         (dist + i)->closedorbit   = (double*)malloc(dim*sizeof(double));
@@ -50,8 +51,9 @@ void initializedistribution(int numberOfDist){
         (dist + i)->disttype = 0;
         for(int j=0; j<dim; j++)
         {
-            (dist + i)->cuts2apply->physical[j] = (struct cut*)malloc(sizeof(struct cut));
+            (dist + i)->cuts2apply->physical[j]   = (struct cut*)malloc(sizeof(struct cut));
             (dist + i)->cuts2apply->normalized[j] = (struct cut*)malloc(sizeof(struct cut));
+            (dist + i)->cuts2apply->action[j]     = (struct cut*)malloc(sizeof(struct cut));
             (dist +i)->coord[j] = (struct parameters*)malloc(sizeof(struct parameters));
             (dist +i)->coord[j]->start=0;
             (dist +i)->coord[j]->stop=0;
@@ -100,6 +102,14 @@ void settasmatrix(double *tas){
 		}
 	}
 }
+
+void setactionanglecut(int variable, double min, double max){
+    dist->cuts2apply->isset_a=1;
+    dist->cuts2apply->action[variable]->min=min;
+    dist->cuts2apply->action[variable]->max=max;
+    dist->cuts2apply->action[variable]->isset=1;
+}
+
 void settasmatrix_element(double value, int row, int column){
 
             dist->tas[row][column] = value;

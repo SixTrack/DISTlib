@@ -120,12 +120,13 @@ void generate_grid(){
 /*If emittance is defined it converts to canonical coordinates */
 void action2normalized(double acangl[6], double normalized[6]){
 
-    normalized[0]= sqrt(acangl[0]/2)*cos(acangl[1]);
-    normalized[1]=-sqrt(acangl[0]/2)*sin(acangl[1]);
+    normalized[0]= sqrt(acangl[0])*cos(acangl[1]);
+    normalized[1]=-sqrt(acangl[0])*sin(acangl[1]);
     normalized[2]= sqrt(acangl[2]/2)*cos(acangl[3]);
     normalized[3]=-sqrt(acangl[2]/2)*sin(acangl[3]);
     normalized[4]= sqrt(acangl[4]/2)*cos(acangl[5]);
-    normalized[5]=-sqrt(acangl[4]/2)*sin(acangl[5]); // used to devide with 1000 here before.. 
+    normalized[5]=-sqrt(acangl[4]/2)*sin(acangl[5]); // used to devide with 1000 here before..
+    //printf("hooor square %f \n", sqrt(pow(normalized[0],2)+pow(normalized[1],2))) ;
 }
 
 void normalized2canonical(double normalized_in[6], double cancoord[6]){
@@ -176,6 +177,19 @@ int particle_within_limits_physical(double *physical){
     
     return 1;
 
+}
+
+int particle_with_limits_action(int i, double value){
+    
+    if(dist->cuts2apply->action[i]->isset==1){
+        if(value > pow(dist->cuts2apply->action[i]->min,2) && value < pow(dist->cuts2apply->action[i]->max,2)) return 1;
+        else return 0;
+    }
+    else{
+        return 1;
+    }
+
+    return 1;
 }
 
 /*Checks if the particle is within the normalized limit set by the user*/
@@ -234,8 +248,15 @@ void createcoordinates(int index,  double start, double stop, int length, int ty
     }
 
     else if(type==6){ // Rayleigh distribution
+        double tmp;
         for(int i=0;i <length; i++){
-            dist->incoord[i]->coord[index] = randray(start, stop);
+            
+            tmp = randray(start, stop);
+            while(particle_with_limits_action(index, tmp)==0)
+                tmp = randray(start, stop);
+
+            dist->incoord[i]->coord[index] = tmp;
+            printf("%f \n", sqrt(tmp/2));
         }
     }
     else

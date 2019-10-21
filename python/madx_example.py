@@ -27,10 +27,14 @@ tas = readtasfrommadx(myfile)
 
 
 print(tas)
-
+#1st First input (coordinate)
+#2nd coord type, 0 - action angle, 1 - normalized
+#3rd type 4 - uniform dist, 5 - normalized,  6-reyligh
+#4 start value for uniform, mean value for normalized and reyligh
+#5 sstop value for uniform, sigma for normalized and reyligh
 dist.settasmatrix(tas)
-dist.setscan_para_diagonal(0,0,6,zero,one);
-dist.setscan_para_diagonal(1,0,4,zero,pia2);
+dist.setscan_para_diagonal(0,0,6,zero,one); 
+dist.setscan_para_diagonal(1,0,4,zero,pia2); 
 dist.setscan_para_diagonal(2,0,6,zero,one);
 dist.setscan_para_diagonal(3,0,4,zero,pia2);
 dist.setscan_para_diagonal(4,0,6,zero,one);
