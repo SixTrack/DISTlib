@@ -122,10 +122,10 @@ void action2normalized(double acangl[6], double normalized[6]){
 
     normalized[0]= sqrt(acangl[0])*cos(acangl[1]);
     normalized[1]=-sqrt(acangl[0])*sin(acangl[1]);
-    normalized[2]= sqrt(acangl[2]/2)*cos(acangl[3]);
-    normalized[3]=-sqrt(acangl[2]/2)*sin(acangl[3]);
-    normalized[4]= sqrt(acangl[4]/2)*cos(acangl[5]);
-    normalized[5]=-sqrt(acangl[4]/2)*sin(acangl[5]); // used to devide with 1000 here before..
+    normalized[2]= sqrt(acangl[2])*cos(acangl[3]);
+    normalized[3]=-sqrt(acangl[2])*sin(acangl[3]);
+    normalized[4]= sqrt(acangl[4])*cos(acangl[5]);
+    normalized[5]=-sqrt(acangl[4])*sin(acangl[5]); // used to devide with 1000 here before..
     //printf("hooor square %f \n", sqrt(pow(normalized[0],2)+pow(normalized[1],2))) ;
 }
 

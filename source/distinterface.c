@@ -121,6 +121,8 @@ void settwisstas(double betax, double alfax, double betay, double alfay){
     dist->tas[0][0] = sqrt(betax);
     dist->tas[1][0] =-(alfax)/sqrt(betax);
     dist->tas[1][1] =-1/sqrt(betax);
+
+    
     dist->tas[2][2] = sqrt(betay);
     dist->tas[3][2] =-alfay/sqrt(betay);
     dist->tas[3][3] =-1/sqrt(betay);
