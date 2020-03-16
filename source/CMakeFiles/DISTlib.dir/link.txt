@@ -1,0 +1,2 @@
+/opt/rh/devtoolset-7/root/usr/bin/ar qc libDISTlib.a  CMakeFiles/DISTlib.dir/distgeneration.c.o CMakeFiles/DISTlib.dir/distinterface.c.o CMakeFiles/DISTlib.dir/feigen.c.o CMakeFiles/DISTlib.dir/file_reader.c.o CMakeFiles/DISTlib.dir/helper.c.o CMakeFiles/DISTlib.dir/outputdist.c.o
+/opt/rh/devtoolset-7/root/usr/bin/ranlib libDISTlib.a

@@ -103,6 +103,14 @@ void settasmatrix(double *tas){
 	}
 }
 
+void settasmatrixtranspose(double *tas){
+    for(int i =0; i<dim; i++){
+        for(int j =0; j<dim; j++){
+            dist->tas[j][i] = tas[j+i*dim];
+        }
+    }
+}
+
 void setactionanglecut(int variable, double min, double max){
     dist->cuts2apply->isset_a=1;
     dist->cuts2apply->action[variable]->min=min;
@@ -267,6 +275,25 @@ void getunconvertedcoord(double *x, double *xp, double *y, double *yp, double *s
     *totparticles=nparticles;
 }
 
+void readtasmatrixfile(const char*  filename_in){
+    FILE * fp;
+    char line [500]; /* or other suitable maximum line size */
+
+    fp = fopen(filename_in, "r+");
+    int i=0;
+    if(fp==NULL){
+        printf("No such file\n");
+        exit(1);
+    }
+   while ( fgets ( line, sizeof line, fp ) != NULL ){ /* read a line */
+        printf("%s \n", line);
+        sscanf(line, "%lf %lf %lf %lf %lf %lf", &dist->tas[i][1], &dist->tas[i][1], &dist->tas[i][2], &dist->tas[i][3], &dist->tas[i][4], &dist->tas[i][5]);
+        //printf("%f %f %f %f %f %f \n", dist->tas[i][1], dist->tas[i][1], dist->tas[i][2], dist->tas[i][3], dist->tas[i][4], dist->tas[i][5]);
+        i++;
+    }
+    fclose(fp);
+}
+
 
 void getrefpara(double *energy0, double *mass0, int *a0, int *z0){
     *energy0=dist->ref->e0;
@@ -286,4 +313,30 @@ int writefile_f(const char*  filename_in, int strlen){
     strncpy(filename, filename_in, strlen);
     filename[strlen] = '\0';
     print2file(filename);
+}
+
+void free_distribution(int i){
+
+    free((dist+i)->closedorbit);
+    free((dist+i)->tas);
+    free((dist+i)->invtas);
+
+    for(int j=0; j<dim; j++)
+    {
+        free((dist + i)->cuts2apply->physical[j]) ;
+        free((dist + i)->cuts2apply->normalized[j]) ;
+        free((dist + i)->cuts2apply->action[j]) ;
+        free((dist +i)->coord[j]);
+    }
+    free((dist+i)->coord);
+    free((dist + i)->cuts2apply->physical);
+    free((dist + i)->cuts2apply->normalized);
+    free((dist + i)->cuts2apply->action);
+    free((dist + i)->cuts2apply);
+    
+    free((dist + i)->ref);
+    free((dist + i)->emitt);
+    free(dist+i);
+
+
 }
