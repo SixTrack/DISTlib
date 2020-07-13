@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from distpyinterface import *
 class DISTlib:
 	def __init__(self):
-		self.dist = cdll.LoadLibrary("../demo/buildDemo/libhello.so")
+		self.dist = cdll.LoadLibrary("/mnt/c/Users/tobia/codes/DISTlib/demo/buildDemo/libhello.so")
 
 	def initializedistribution(self,num):
 		self.dist.initializedistribution(c_int(num))

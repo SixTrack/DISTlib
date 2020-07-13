@@ -34,8 +34,8 @@ for i in range(0, len(thdeg)):
 	xpa.append(-numpy.sqrt(eps/beta)*( alfa*numpy.cos(teta[i]) + numpy.sin(teta[i]) ))
 
 
-dist.initializedistribution_(byref(c_int(2)))
-setEmittance12(dist,e1,e2)
+dist.initializedistribution(byref(c_int(2)))
+dist.setEmittance12(e1,e2)
 setEmittance3(dist, e3)
 setmassmom(dist, mass, momentum)
 setdisttype(dist,0)

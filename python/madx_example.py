@@ -22,7 +22,7 @@ dist.setEmittance3(e3)
 dist.setEandMass(6500, 0.938)
 dist.settotalsteps(3000)
 
-myfile = "/home/tobias/codes/SixTrackTobias/test/orbit6d-element-quadrupole/myeigen.dat"
+myfile = "/mnt/c/Users/tobia/codes/SixTrackTobias/test/orbit6d-element-quadrupole/simple.eigen"
 tas = readtasfrommadx(myfile)
 
 
