@@ -6,7 +6,7 @@
 #include "distinterface.h"
 #include "distgeneration.h"
 #include "outputdist.h"
-#include "file_reader.h"
+#include "distdata.h"
 
 
 /*
@@ -25,6 +25,7 @@ void initializedistribution(int numberOfDist){
         (dist + i)->cuts2apply = (struct appliedcut*)malloc(sizeof(struct appliedcut));
         (dist + i)->cuts2apply->physical = (struct cut**)malloc(dim*sizeof(struct cut*));
         (dist + i)->cuts2apply->normalized = (struct cut**)malloc(dim*sizeof(struct cut*));
+        (dist + i)->cuts2apply->action = (struct cut**)malloc(dim*sizeof(struct cut*));
         (dist + i)->tas   = (double**)malloc(dim*sizeof(double*));
         (dist + i)->invtas   = (double**)malloc(dim*sizeof(double*));
         (dist + i)->closedorbit   = (double*)malloc(dim*sizeof(double));
@@ -50,8 +51,9 @@ void initializedistribution(int numberOfDist){
         (dist + i)->disttype = 0;
         for(int j=0; j<dim; j++)
         {
-            (dist + i)->cuts2apply->physical[j] = (struct cut*)malloc(sizeof(struct cut));
+            (dist + i)->cuts2apply->physical[j]   = (struct cut*)malloc(sizeof(struct cut));
             (dist + i)->cuts2apply->normalized[j] = (struct cut*)malloc(sizeof(struct cut));
+            (dist + i)->cuts2apply->action[j]     = (struct cut*)malloc(sizeof(struct cut));
             (dist +i)->coord[j] = (struct parameters*)malloc(sizeof(struct parameters));
             (dist +i)->coord[j]->start=0;
             (dist +i)->coord[j]->stop=0;
@@ -70,7 +72,7 @@ void initializedistribution(int numberOfDist){
         }
     }
     diststart=dist;
-
+ 
 }
 
 void sete0andmass0(double energy0, double mass0){
@@ -100,6 +102,22 @@ void settasmatrix(double *tas){
 		}
 	}
 }
+
+void settasmatrixtranspose(double *tas){
+    for(int i =0; i<dim; i++){
+        for(int j =0; j<dim; j++){
+            dist->tas[j][i] = tas[j+i*dim];
+        }
+    }
+}
+
+void setactionanglecut(int variable, double min, double max){
+    dist->cuts2apply->isset_a=1;
+    dist->cuts2apply->action[variable]->min=min;
+    dist->cuts2apply->action[variable]->max=max;
+    dist->cuts2apply->action[variable]->isset=1;
+}
+
 void settasmatrix_element(double value, int row, int column){
 
             dist->tas[row][column] = value;
@@ -109,8 +127,10 @@ void settasmatrix_element(double value, int row, int column){
 void settwisstas(double betax, double alfax, double betay, double alfay){
 
     dist->tas[0][0] = sqrt(betax);
-    dist->tas[1][0] =-(alfax)/sqrt(betax);
+    dist->tas[1][0] =-alfax/sqrt(betax);
     dist->tas[1][1] =-1/sqrt(betax);
+
+    
     dist->tas[2][2] = sqrt(betay);
     dist->tas[3][2] =-alfay/sqrt(betay);
     dist->tas[3][3] =-1/sqrt(betay);
@@ -159,7 +179,7 @@ void setscan_para_diagonal(int variable, int variable_type, int type, double sta
     }
     dist->ref->typeused[variable] =  variable_type;
     dist->incoordtype=variable_type; // this is wrong
-
+    
     createcoordinates(variable, start, stop, dist->totincoord,type);
 }
 
@@ -221,7 +241,7 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
         nparticles = *totparticles;
 
     for(int i=0; i < nparticles; i++){
-        canonical2six(dist->outcoord[i]->coord, dist->ref->beta0, dist->ref->pc0, dist->ref->mass0, dist->incoord[i]->mass, tmp);
+        canonical2six(dist->outcoord[i]->coord, dist->ref->beta0, dist->ref->pc0, dist->incoord[i]->mass, tmp);
         x[i]  = tmp[0];
         xp[i] = tmp[1];
         y[i]  = tmp[2];
@@ -233,7 +253,6 @@ void get6trackcoord(double *x, double *xp, double *y, double *yp, double *sigma,
 }
 
 void getunconvertedcoord(double *x, double *xp, double *y, double *yp, double *sigma, double *deltap, int *totparticles){
-    double tmp[6];
     int nparticles;
     if(dist->isDistrcalculated ==0){
         gensixcanonical();
@@ -255,23 +274,69 @@ void getunconvertedcoord(double *x, double *xp, double *y, double *yp, double *s
     *totparticles=nparticles;
 }
 
+void readtasmatrixfile(const char*  filename_in){
+    FILE * fp;
+    char line [500]; /* or other suitable maximum line size */
+
+    fp = fopen(filename_in, "r+");
+    int i=0;
+    if(fp==NULL){
+        printf("No such file\n");
+        exit(1);
+    }
+   while ( fgets ( line, sizeof line, fp ) != NULL ){ /* read a line */
+        printf("%s \n", line);
+        sscanf(line, "%lf %lf %lf %lf %lf %lf", &dist->tas[i][1], &dist->tas[i][1], &dist->tas[i][2], &dist->tas[i][3], &dist->tas[i][4], &dist->tas[i][5]);
+        //printf("%f %f %f %f %f %f \n", dist->tas[i][1], dist->tas[i][1], dist->tas[i][2], dist->tas[i][3], dist->tas[i][4], dist->tas[i][5]);
+        i++;
+    }
+    fclose(fp);
+}
+
 
 void getrefpara(double *energy0, double *mass0, int *a0, int *z0){
-    *energy0=dist->ref->e0;
-    *mass0=dist->ref->mass0;
-    *a0=dist->ref->a0;
-    *z0=dist->ref->z0;
+    *energy0= dist->ref->e0;
+    *mass0  = dist->ref->mass0;
+    *a0     = dist->ref->a0;
+    *z0     = dist->ref->z0;
 }
-int readfile_f(const char*  filename_in, int strlen){
+/*
+void readfile_f(const char*  filename_in, int strlen){
     char filename [strlen];
     strncpy(filename, filename_in, strlen);
     filename[strlen] = '\0';
     readfile(filename);
-}
+}*/
 
-int writefile_f(const char*  filename_in, int strlen){
+void writefile_f(const char*  filename_in, int strlen){
     char filename [strlen];
     strncpy(filename, filename_in, strlen);
     filename[strlen] = '\0';
     print2file(filename);
+}
+
+void free_distribution(int i){
+
+    free((dist+i)->closedorbit);
+    free((dist+i)->tas);
+    free((dist+i)->invtas);
+
+    for(int j=0; j<dim; j++)
+    {
+        free((dist + i)->cuts2apply->physical[j]) ;
+        free((dist + i)->cuts2apply->normalized[j]) ;
+        free((dist + i)->cuts2apply->action[j]) ;
+        free((dist +i)->coord[j]);
+    }
+    free((dist+i)->coord);
+    free((dist + i)->cuts2apply->physical);
+    free((dist + i)->cuts2apply->normalized);
+    free((dist + i)->cuts2apply->action);
+    free((dist + i)->cuts2apply);
+    
+    free((dist + i)->ref);
+    free((dist + i)->emitt);
+    free(dist+i);
+
+
 }

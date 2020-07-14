@@ -49,7 +49,7 @@ setParameters(dist,5,0.001,0,1,0)
 setParameters(dist,6,0,0,1,0)
 
 
-[x,px,y,py,deltas,dp] = getphysicalocordinates(dist)
+[x,px,y,py,deltas,dp] = get6trackcoord(dist)
 
 print(dist.getnumberdist_())
 

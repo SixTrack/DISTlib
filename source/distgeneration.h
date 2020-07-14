@@ -64,8 +64,10 @@ struct emittances{
 struct appliedcut{
 	int isset_p;
 	int isset_n;
+	int isset_a;
 	struct cut** physical;
 	struct cut** normalized;
+	struct cut** action;
 };
 
 //void canonical2emittance_(double cancord[6], double emittance[3]);
@@ -74,13 +76,14 @@ struct appliedcut{
 //void action2sixinternal_(double tc[6], double *results, double *normalized);
 //int checkdist();
 //void createrandomdist_();
-void gensixcanonical();
+void gensixcanonical(void);
 int particle_within_limits_physical(double *physical);
 int particle_within_limits_normalized(double *normalized);
-void generatefromnormalized();
-void generatefrommixed();
-void generatefromaction();
-void generatefromphysical();
+int particle_with_limits_action(int i, double value);
+void generatefromnormalized(void);
+void generatefrommixed(void);
+void generatefromaction(void);
+void generatefromphysical(void);
 void action2normalized(double acangl[6], double normalized[6]);
 void normalized2canonical(double normalized[6], double cancoord[6]);
 double randn(double mu, double sigma);
@@ -88,5 +91,7 @@ double rand_uni(double low, double high);
 void createLinearSpaced(int length, double start, double stop, double *eqspaced );
 double randray(double mu, double sigma);
 void createcoordinates(int index,  double start, double stop, int length, int type);
-int gettotalgridlength();
-void generate_grid();
+int gettotalgridlength(void);
+void generate_grid(void);
+void allocateincoord(int linecount);
+void deallocateincoord(void);

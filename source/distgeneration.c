@@ -6,7 +6,12 @@
 #include "distgeneration.h"
 #include "distinterface.h"
 #include "outputdist.h"
-#include "file_reader.h"
+
+
+struct distparam* dist;
+struct distparam* diststart;
+int dim;
+int distn;
 
 
 void gensixcanonical(){
@@ -72,9 +77,6 @@ int gettotalgridlength(){
 void generate_grid(){
 
     int counter = 0;
-    double tc[6];
-    double tmp[6];
-    double tmp_n[6];
     double **readin;
     int totallenght = gettotalgridlength();
     readin = (double**)malloc(dim*sizeof(double*));
@@ -120,12 +122,19 @@ void generate_grid(){
 /*If emittance is defined it converts to canonical coordinates */
 void action2normalized(double acangl[6], double normalized[6]){
 
-    normalized[0]= sqrt(acangl[0]/2)*cos(acangl[1]);
-    normalized[1]=-sqrt(acangl[0]/2)*sin(acangl[1]);
-    normalized[2]= sqrt(acangl[2]/2)*cos(acangl[3]);
-    normalized[3]=-sqrt(acangl[2]/2)*sin(acangl[3]);
-    normalized[4]= sqrt(acangl[4]/2)*cos(acangl[5]);
-    normalized[5]=-sqrt(acangl[4]/2)*sin(acangl[5]); // used to devide with 1000 here before.. 
+    normalized[0]= sqrt(acangl[0])*cos(acangl[1]);
+    normalized[1]=-sqrt(acangl[0])*sin(acangl[1]);
+    normalized[2]= sqrt(acangl[2])*cos(acangl[3]);
+    normalized[3]=-sqrt(acangl[2])*sin(acangl[3]);
+    if(dist->incoordtype!=3) {
+        normalized[4]= sqrt(acangl[4])*cos(acangl[5]);
+        normalized[5]=-sqrt(acangl[4])*sin(acangl[5]); // used to devide with 1000 here before..
+    }
+    else{
+        normalized[4]= acangl[4];
+        normalized[5]= acangl[5]; // used to devide with 1000 here before..
+    }
+
 }
 
 void normalized2canonical(double normalized_in[6], double cancoord[6]){
@@ -141,10 +150,10 @@ void normalized2canonical(double normalized_in[6], double cancoord[6]){
     if(dist->incoordtype==3) {
         double lindp = 0;
         double lindeltas=0;
-        double deltap = normalized[4];
-        double deltas = normalized[5];
+        double deltap = normalized_in[5];
+        double deltas = normalized_in[4];
+        printf("deltappp %f %f", deltap, deltas);
         double *xap;
-        double det = (dist->tas[4][4]*dist->tas[5][5] - dist->tas[4][5]*dist->tas[5][4]);
         for(int i=0; i<4;i++){
             lindeltas = lindeltas+dist->tas[4][i]*normalized[i];
             lindp=lindp+dist->tas[5][i]*normalized[i];
@@ -178,6 +187,19 @@ int particle_within_limits_physical(double *physical){
 
 }
 
+int particle_with_limits_action(int i, double value){
+    
+    if(dist->cuts2apply->action[i]->isset==1){
+        if(value > pow(dist->cuts2apply->action[i]->min,2) && value < pow(dist->cuts2apply->action[i]->max,2)) return 1;
+        else return 0;
+    }
+    else{
+        return 1;
+    }
+
+    return 1;
+}
+
 /*Checks if the particle is within the normalized limit set by the user*/
 int particle_within_limits_normalized(double *normalized){
     
@@ -191,7 +213,9 @@ int particle_within_limits_normalized(double *normalized){
 }
 
 void createcoordinates(int index,  double start, double stop, int length, int type){
-	double temp [length];
+	double *temp;
+    temp = (double*)malloc(length*sizeof(double));
+    
     if(type ==0){ //Constant value
     	for(int i=0;i <length; i++){
         	dist->incoord[i]->coord[index] = start;
@@ -203,8 +227,9 @@ void createcoordinates(int index,  double start, double stop, int length, int ty
     else if(type==1){ //Linearly spaced intervalls
 		createLinearSpaced(length, start, stop, temp);
         for(int i=0;i <length; i++){
-            dist->incoord[i]->coord[index] = exp(temp[i]);
-        }     
+            dist->incoord[i]->coord[index] = temp[i];
+        }
+
     }
     else if(type==2){ //Exponentially spaced
     	createLinearSpaced(length, start, stop, temp);
@@ -223,7 +248,6 @@ void createcoordinates(int index,  double start, double stop, int length, int ty
     else if(type==4){ // uniform random 
         for(int i=0;i <length; i++){
             dist->incoord[i]->coord[index] = rand_uni(start, stop);
-            //printf("%f \n", dist->coord[index-1]->values[i] );
         }
     }
 
@@ -234,12 +258,20 @@ void createcoordinates(int index,  double start, double stop, int length, int ty
     }
 
     else if(type==6){ // Rayleigh distribution
+        double tmp;
         for(int i=0;i <length; i++){
-            dist->incoord[i]->coord[index] = randray(start, stop);
+            
+            tmp = randray(start, stop);
+            while(particle_with_limits_action(index, tmp)==0)
+                tmp = randray(start, stop);
+
+            dist->incoord[i]->coord[index] = tmp;
         }
     }
     else
     	issue_error("Unknown type of spacing");
+
+    free(temp);
 }
 
 
@@ -265,8 +297,8 @@ double randn(double mu, double sigma)
  
   do
     {
-      U1 = -1 + ((double) rand () / RAND_MAX) * 2;
-      U2 = -1 + ((double) rand () / RAND_MAX) * 2;
+      U1 = -1 + ( rand () / (double)RAND_MAX) * 2;
+      U2 = -1 + ( rand () / (double)RAND_MAX) * 2;
       W = pow (U1, 2) + pow (U2, 2);
     }
   while (W >= 1 || W == 0);
@@ -283,11 +315,45 @@ double randn(double mu, double sigma)
 double rand_uni(double low, double high)
 {
 
-  return ( (double)rand() * ( high - low ) ) / (double)RAND_MAX + low;
+  return (double)(rand() * ( high - low ) ) / (double)RAND_MAX + low;
 }
 
 double randray(double mu, double sigma){
   double low = 0;
   double high =1;
   return pow((mu+sigma*sqrt((-2*log(rand_uni(low, high))))),2);
+}
+
+
+void allocateincoord(int linecount){
+  dist->incoord = (struct coordinates**)malloc(linecount*sizeof(struct coordinates*));
+  dist->outcoord = (struct coordinates**)malloc(linecount*sizeof(struct coordinates*));
+  dist->totincoord = linecount;
+  for(int i=0; i< dim; i++){
+    dist->ref->typeused[i]=-1;
+  }
+  for(int i=0; i<linecount; i++){
+    dist->incoord[i] = (struct coordinates*)malloc(sizeof(struct coordinates));
+    
+    dist->incoord[i]->coord = (double*)malloc(dim*sizeof(double));
+    dist->incoord[i]->readin = (double*)malloc(32*sizeof(double));
+
+    dist->incoord[i]->mass=0;
+    dist->incoord[i]->a=0;
+    dist->incoord[i]->z=0;
+
+    dist->outcoord[i] = (struct coordinates*)malloc(sizeof(struct coordinates));
+    dist->outcoord[i]->coord = (double*)malloc(dim*sizeof(double));
+
+  }
+  dist->isallocated =1;
+}
+void deallocateincoord(void){
+
+
+  free(dist->incoord); 
+  free(dist->outcoord); 
+  //dist->ref->typeused = (int*)malloc(dim*sizeof(int));
+  dist->isallocated = 0;
+  dist->totincoord = -1;
 }
